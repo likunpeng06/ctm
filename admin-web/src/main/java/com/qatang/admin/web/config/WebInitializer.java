@@ -1,5 +1,6 @@
 package com.qatang.admin.web.config;
 
+import com.qatang.admin.web.controller.exception.WebExceptionHandler;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -21,7 +22,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[]{WebConfig.class, WebExceptionAdviceConfig.class};
+        return new Class<?>[]{WebConfig.class, WebExceptionHandler.class};
     }
 
     @Override
