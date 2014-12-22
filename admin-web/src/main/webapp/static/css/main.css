@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+body {
+    font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Segoe UI","Microsoft Yahei",Tahoma,Arial,STHeiti,sans-serif;
+}
+
+.login-box{
+    background: none repeat scroll 0 0 #FBFBFB;
+    border: 1px solid #E1E1E1;
+    box-shadow: 0 0 3px #EEEEEE, 0 0 3px #FFFFFF inset;
+    margin-top: 110px;
+    padding: 40px;
+}
+
+.main{
+    padding-top: 60px;
+}

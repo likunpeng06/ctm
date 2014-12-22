@@ -2,9 +2,12 @@ package com.qatang.core.dao;
 
 import com.qatang.core.query.Searchable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,13 @@ public class BaseDao<T, ID extends Serializable> extends AbstractDao<T, ID> {
 //                searchable.getPage(),
 //                total
 //        );
-        return null;
+        String hql = "from User u where 1=1";
+        String countHql = "select count(u) from User u";
+        Query query = entityManager.createQuery(hql);
+        Query countQuery = entityManager.createQuery(countHql);
+        long count = (Long) countQuery.getSingleResult();
+
+        return new PageImpl<T>(query.getResultList(), new PageRequest(1, 200), count);
     }
 
     @Override

@@ -39,14 +39,14 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
         return new Filter[]{filter};
     }
 
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
-        delegatingFilterProxy.setTargetFilterLifecycle(true);
-
-        FilterRegistration.Dynamic registration = servletContext.addFilter("shiroFilter", delegatingFilterProxy);
-        registration.setAsyncSupported(true);
-        registration.addMappingForUrlPatterns(null, false, "/*");
-        super.onStartup(servletContext);
-    }
+//    @Override
+//    public void onStartup(ServletContext servletContext) throws ServletException {
+//        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
+//        delegatingFilterProxy.setTargetFilterLifecycle(true);
+//
+//        FilterRegistration.Dynamic registration = servletContext.addFilter("shiroFilter", delegatingFilterProxy);
+//        registration.setAsyncSupported(true);
+//        registration.addMappingForUrlPatterns(null, false, "/*");
+//        super.onStartup(servletContext);
+//    }
 }
