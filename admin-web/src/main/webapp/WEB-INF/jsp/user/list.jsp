@@ -8,10 +8,10 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="keywords" content="" />
         <meta http-equiv="description" content="" />
-        <link rel="stylesheet" href="${ctx}/static/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${ctx}/static/css/main.css">
-        <script src="${ctx}/static/js/jquery-1.11.1.min.js"></script>
-        <script src="${ctx}//staticjs/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="${ctx}/resources/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${ctx}/resources/css/main.css">
+        <script src="${ctx}/resources/js/jquery-1.11.1.min.js"></script>
+        <script src="${ctx}/resources/bootstrap.min.js"></script>
     </head>
     <body>
         <%--<jsp:include page="/WEB-INF/jsp/navi.jsp"/>--%>
@@ -63,7 +63,7 @@
                                             <td>${user.valid.name}</td>
                                             <td>${user.emailValid.name}</td>
                                             <td>${user.mobileValid.name}</td>
-                                            <td><a href="${ctx}/user/input/${user.id}">修改</a></td>
+                                            <td><a href="${ctx}/user/update/${user.id}">修改</a></td>
                                             <td><a href="${ctx}/user/password/input/${user.id}">重置密码</a></td>
                                             <td>
                                                 <c:choose>

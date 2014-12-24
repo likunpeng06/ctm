@@ -32,7 +32,7 @@ public class WebExceptionHandler {
         mav.addObject("message", exception.getMessage());
         mav.addObject("exception", exception);
         mav.addObject("url", request.getRequestURL());
-        mav.setViewName("error");
+        mav.setViewName("redirect:/error");
         return mav;
     }
 }

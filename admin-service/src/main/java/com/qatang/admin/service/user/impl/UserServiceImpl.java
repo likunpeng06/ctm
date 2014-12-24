@@ -1,9 +1,9 @@
 package com.qatang.admin.service.user.impl;
 
-import com.qatang.admin.entity.user.User;
-import com.qatang.core.service.AbstractService;
 import com.qatang.admin.dao.user.UserDao;
+import com.qatang.admin.entity.user.User;
 import com.qatang.admin.service.user.UserService;
+import com.qatang.core.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +23,10 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
 
     public User findByUsername(String username) {
         return getUserDao().findByUsername(username);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return getUserDao().findByEmail(email);
     }
 }

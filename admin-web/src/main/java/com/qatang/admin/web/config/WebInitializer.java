@@ -1,6 +1,7 @@
 package com.qatang.admin.web.config;
 
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -39,14 +40,19 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
         return new Filter[]{filter};
     }
 
-//    @Override
-//    public void onStartup(ServletContext servletContext) throws ServletException {
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        servletContext.addFilter("characterEncodingFilter", filter).addMappingForUrlPatterns(null, false, "/*");
+
+        servletContext.addFilter("openEntityManagerInViewFilter", new OpenEntityManagerInViewFilter()).addMappingForUrlPatterns(null, false, "/*");
+
 //        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
 //        delegatingFilterProxy.setTargetFilterLifecycle(true);
-//
-//        FilterRegistration.Dynamic registration = servletContext.addFilter("shiroFilter", delegatingFilterProxy);
-//        registration.setAsyncSupported(true);
-//        registration.addMappingForUrlPatterns(null, false, "/*");
-//        super.onStartup(servletContext);
-//    }
+//        servletContext.addFilter("shiroFilter", delegatingFilterProxy).addMappingForUrlPatterns(null, false, "/*");
+
+        super.onStartup(servletContext);
+    }
 }

@@ -9,4 +9,6 @@ import com.qatang.core.dao.IDao;
  */
 public interface UserDao extends IDao<User, Long> {
     public User findByUsername(String username);
+
+    public User findByEmail(String email);
 }

@@ -7,13 +7,10 @@ import com.qatang.core.enums.converter.EnableDisableStatusConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -28,6 +25,7 @@ import java.util.Date;
         @Index(name = "idx_valid", columnList = "valid"),
         @Index(name = "idx_valid_email_mobile", columnList = "email_valid,mobile_valid")
 })
+//@FieldMatch(first = "password", second = "conPassword", message = "{password.fields.must.match}")
 @DynamicInsert
 @DynamicUpdate
 public class User extends AbstractEntity {
@@ -37,7 +35,7 @@ public class User extends AbstractEntity {
     public static final int USERNAME_MIN_LENGTH = 2;
     public static final int USERNAME_MAX_LENGTH = 20;
     public static final int PASSWORD_MIN_LENGTH = 6;
-    public static final int PASSWORD_MAX_LENGTH = 20;
+    public static final int PASSWORD_MAX_LENGTH = 32;
 
     @Transient
     private static final long serialVersionUID = 1494723713506838837L;
@@ -46,24 +44,18 @@ public class User extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @NotNull(message = "{not.null}")
-    @Length(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH, message = "{user.username.invalid.length}")
+    @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH, message = "{user.username.invalid.length}")
     @Pattern(regexp = USERNAME_PATTERN, message = "{user.username.not.valid}")
-    @Column(nullable = false, length = 32, updatable = false)
+    @Column(updatable = false)
     private String username;
 
-    @NotNull(message = "{not.null}")
-    @Length(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH, message = "{user.password.invalid.length}")
-    @Column(nullable = false, length = 64)
+    @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH, message = "{user.password.invalid.length}")
+    @Column(nullable = false)
     private String password;
-    @Transient
-    @NotNull(message = "{not.null}")
-    private String conPassword;
 
     @Column(nullable = false, length = 64)
     private String salt;
 
-    @NotEmpty(message = "{not.null}")
     @Pattern(regexp = EMAIL_PATTERN, message = "{user.email.not.valid}")
     @Column(nullable = false, length = 128)
     private String email;
@@ -92,6 +84,10 @@ public class User extends AbstractEntity {
     @Convert(converter = YesNoStatusConverter.class)
     @Column(name = "mobile_valid", nullable = false)
     private YesNoStatus mobileValid = YesNoStatus.NO;
+
+    @Convert(converter = YesNoStatusConverter.class)
+    @Column(name = "root", nullable = false)
+    private YesNoStatus root = YesNoStatus.NO;
 
     public Long getId() {
         return id;
@@ -181,11 +177,7 @@ public class User extends AbstractEntity {
         this.mobileValid = mobileValid;
     }
 
-    public String getConPassword() {
-        return conPassword;
-    }
-
-    public void setConPassword(String conPassword) {
-        this.conPassword = conPassword;
+    public void setRoot(YesNoStatus root) {
+        this.root = root;
     }
 }

@@ -24,7 +24,7 @@
     <li><a href="#">系统管理</a></li>
     <li><a href="${ctx}/user/list">用户管理</a></li>
     <li class="active">
-        用户添加
+        用户修改
         <%--<c:choose>--%>
         <%--<c:when test="${userForm.id == null}">--%>
         <%--</c:when>--%>
@@ -41,30 +41,19 @@
     <legend class=""></legend>
 </div>
     <div class="container">
-            <form:form class="form-horizontal" action="${ctx}/user/create" method="post" commandName="userForm">
+            <form:form class="form-horizontal" action="${ctx}/user/update" method="post" commandName="userForm">
+                <input type="hidden" name="user.id" value="${userForm.user.id}"/>
                 <form:errors path="*" cssClass="alert alert-danger" element="div" role="alert"/>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">用户名</label>
                     <div class="col-lg-6">
-                        <input type="text" class="form-control" name="user.username" value="${userForm.user.username}" autofocus="" required="">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">密码</label>
-                    <div class="col-lg-6">
-                        <input type="password" class="form-control" name="user.password" value="${userForm.user.password}" required="">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">确认密码</label>
-                    <div class="col-lg-6">
-                        <input type="password" class="form-control" name="conPassword" value="${userForm.conPassword}" required="">
+                        ${userForm.user.username}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">邮箱</label>
                     <div class="col-lg-6">
-                        <input type="text" class="form-control" name="user.email" value="${userForm.user.email}" required="">
+                        ${userForm.user.email}
                     </div>
                 </div>
                 <div class="form-group">

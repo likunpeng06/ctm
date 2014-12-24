@@ -8,10 +8,10 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="keywords" content="" />
         <meta http-equiv="description" content="" />
-        <link rel="stylesheet" href="${ctx}/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${ctx}/css/main.css">
-        <script src="${ctx}/js/jquery-1.11.1.min.js"></script>
-        <script src="${ctx}/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="${ctx}/resources/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${ctx}/resources/css/main.css">
+        <script src="${ctx}/resources/js/jquery-1.11.1.min.js"></script>
+        <script src="${ctx}/resources/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">

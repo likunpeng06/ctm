@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @since 2014-12-19 15:28
  */
 @Configuration
-//@Import(WebShiroConfig.class)
+@Import(WebShiroConfig.class)
 @EnableWebMvc
 @ComponentScan(basePackages = "com.qatang.admin.web.controller", useDefaultFilters = false, includeFilters = @ComponentScan.Filter(value = {Controller.class, ControllerAdvice.class}))
 public class WebConfig extends WebMvcConfigurerAdapter {
@@ -38,7 +38,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        super.addViewControllers(registry);
+        registry.addViewController("/error").setViewName("failure");
+        registry.addViewController("/success").setViewName("success");
     }
 
     @Override

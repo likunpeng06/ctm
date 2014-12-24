@@ -8,8 +8,8 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="keywords" content="" />
     <meta http-equiv="description" content="" />
-    <link rel="stylesheet" href="${ctx}/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${ctx}/css/main.css">
+    <link rel="stylesheet" href="${ctx}/resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${ctx}/resources/css/main.css">
 </head>
 <body>
 <%--<jsp:include page="/WEB-INF/jsp/navi.jsp"/>--%>
