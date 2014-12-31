@@ -10,8 +10,26 @@
         <meta http-equiv="description" content="" />
         <link rel="stylesheet" href="${ctx}/resources/css/bootstrap.min.css">
         <link rel="stylesheet" href="${ctx}/resources/css/main.css">
+        <link rel="stylesheet" href="${ctx}/resources/css/datetimepicker/bootstrap-datetimepicker.min.css">
         <script src="${ctx}/resources/js/jquery-1.11.1.min.js"></script>
-        <script src="${ctx}/resources/bootstrap.min.js"></script>
+        <script src="${ctx}/resources/js/bootstrap.min.js"></script>
+        <script src="${ctx}/resources/js/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+        <script src="${ctx}/resources/js/datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script type="text/javascript">
+            var goPage = function(page) {
+                $("#page").val(page);
+                $("#pageForm").submit();
+            }
+            $(function() {
+                $(".form_datetime").datetimepicker({
+                    format: "yyyy-mm-dd hh:ii:ss",
+                    minuteStep: 1,
+                    todayBtn:  1,
+                    autoclose: 1
+                });
+
+            });
+        </script>
     </head>
     <body>
         <%--<jsp:include page="/WEB-INF/jsp/navi.jsp"/>--%>
@@ -27,6 +45,76 @@
                 </ol>
                 <div class="container-fluid">
                     <a href="${ctx}/user/create">新建用户</a>
+                </div>
+                <div class="container-fluid">
+                    <form class="form-inline" id="queryForm" action="${ctx}/user/list" method="post">
+                        <div class="row wrapper">
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon">用户编码：</span>
+                                    <input type="text" name="searchable.id" id="userid" value="${userForm.searchable.id}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon">用户名：</span>
+                                    <input type="text" name="searchable.username" id="username" value="${userForm.searchable.username}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon">邮箱：</span>
+                                    <input type="text" name="searchable.email" id="email" value="${userForm.searchable.email}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon">手机号：</span>
+                                    <input type="text" name="searchable.mobile" id="mobile" value="${userForm.searchable.mobile}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row wrapper">
+                            <div class="col-sm-12 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon">开始创建时间：</span>
+                                    <div class="input-group date form_datetime">
+                                        <input class="form-control"  size="16" type="text" name="searchable.beginCreatedTime" id="begin_created_time" value="<fmt:formatDate value="${userForm.searchable.beginCreatedTime}" pattern="yyyy-MM-dd HH:mm:ss"/>" readonly>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">结束创建时间：</span>
+                                    <div class="input-group date form_datetime">
+                                        <input class="form-control"  size="16" type="text" name="searchable.endCreatedTime" id="end_created_time" value="<fmt:formatDate value="${userForm.searchable.endCreatedTime}" pattern="yyyy-MM-dd HH:mm:ss"/>" readonly>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row wrapper">
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon ">是否有效：</span>
+                                    <form:select path="userForm.searchable.valid" items="${queryEnableDisableStatusList}" itemValue="value" class="form-control" itemLabel="name"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b-xs">
+                                <div class="input-group">
+                                    <span class="input-group-addon ">排序：</span>
+                                    <form:select path="userForm.orderField" items="${orderFieldMap}" class="form-control"/>
+                                </div>
+                                <div class="input-group">
+                                    <form:select path="userForm.orderDirection" items="${orderDirectionList}" itemValue="value" class="form-control" itemLabel="name"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-1 m-b-xs">
+                                <input class="btn btn-sm btn-default" id="query" name="query" type="submit" value="查询" />
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="container-fluid">
                     <div class="">
@@ -72,6 +160,22 @@
                             </table>
                         </div>
                     </c:if>
+                    <div class="col-sm-4 text-right text-center-xs">
+                        <form id="pageForm" class="form-inline" action="${ctx}/user/list" method="post">
+                            <input id="page" type="hidden" name="currentPage">
+                            <ul class="pagination pagination-sm m-t-none m-b-none">
+                                <c:if test="${userForm.currentPage > 1}">
+                                    <li><a style="cursor:pointer;" onclick="goPage(${userForm.currentPage - 1});"><i class="fa fa-chevron-left"></i></a></li>
+                                </c:if>
+                                <c:forEach begin="1" end="${userForm.totalPages}" var="i">
+                                    <li><a onclick="goPage(${i});" style="cursor:pointer;<c:if test="${userForm.currentPage == i}"> background-color:#EEE;</c:if>">${i}</a></li>
+                                </c:forEach>
+                                <c:if test="${userForm.currentPage < userForm.totalPages}">
+                                    <li><a style="cursor:pointer;" onclick="goPage(${userForm.currentPage + 1});"><i class="fa fa-chevron-right"></i></a></li>
+                                </c:if>
+                            </ul>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

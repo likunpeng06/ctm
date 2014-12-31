@@ -1,7 +1,9 @@
 package com.qatang.admin.web.config;
 
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
+import com.qatang.core.converter.DateConverter;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
+import com.qatang.core.enums.converter.OrderDirectionConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -59,6 +61,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         super.addFormatters(registry);
         registry.addConverter(new YesNoStatusConverter());
         registry.addConverter(new EnableDisableStatusConverter());
+        registry.addConverter(new OrderDirectionConverter());
+        registry.addConverter(new DateConverter());
     }
 
     @Bean

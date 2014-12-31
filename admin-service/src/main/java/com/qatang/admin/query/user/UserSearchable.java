@@ -1,13 +1,9 @@
 package com.qatang.admin.query.user;
 
 import com.qatang.admin.entity.user.User;
-import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.query.AbstractSearchable;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -27,13 +23,6 @@ public class UserSearchable extends AbstractSearchable<User> {
     private Date beginCreatedTime;
     private Date endCreatedTime;
     private EnableDisableStatus valid;
-
-    public UserSearchable() {
-        Sort sort = new Sort(Sort.Direction.DESC, "id");
-        Pageable pageable = new PageRequest(0, GlobalConstants.DEFAULT_PAGE_SIZE, sort);
-        this.setSort(sort);
-        this.setPageable(pageable);
-    }
 
     @Override
     protected Predicate createPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -56,7 +45,7 @@ public class UserSearchable extends AbstractSearchable<User> {
         if (this.getBeginCreatedTime() != null) {
             predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdTime"), this.getBeginCreatedTime()));
         }
-        if (this.getBeginCreatedTime() != null) {
+        if (this.getEndCreatedTime() != null) {
             predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdTime"), this.getEndCreatedTime()));
         }
         if (this.getValid() != null && this.getValid() != EnableDisableStatus.ALL) {

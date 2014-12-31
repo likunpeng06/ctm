@@ -13,5 +13,5 @@ public class GlobalConstants {
     /**
      * 默认每页记录条数
      */
-    public static final int DEFAULT_PAGE_SIZE = 50;
+    public static final int DEFAULT_PAGE_SIZE = 1;
 }

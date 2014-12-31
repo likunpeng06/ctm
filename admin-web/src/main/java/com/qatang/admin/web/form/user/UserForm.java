@@ -1,6 +1,7 @@
 package com.qatang.admin.web.form.user;
 
 import com.qatang.admin.entity.user.User;
+import com.qatang.admin.query.user.UserSearchable;
 import com.qatang.core.form.AbstractForm;
 
 import javax.validation.Valid;
@@ -16,6 +17,8 @@ public class UserForm extends AbstractForm {
     private User user;
     private String conPassword;
 
+    private UserSearchable searchable;
+
     public User getUser() {
         return user;
     }
@@ -30,5 +33,13 @@ public class UserForm extends AbstractForm {
 
     public void setConPassword(String conPassword) {
         this.conPassword = conPassword;
+    }
+
+    public UserSearchable getSearchable() {
+        return searchable;
+    }
+
+    public void setSearchable(UserSearchable searchable) {
+        this.searchable = searchable;
     }
 }

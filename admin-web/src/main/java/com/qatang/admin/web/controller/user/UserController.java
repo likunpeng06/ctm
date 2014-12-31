@@ -7,6 +7,7 @@ import com.qatang.admin.web.form.user.UserForm;
 import com.qatang.admin.web.shiro.authentication.PasswordHelper;
 import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
+import com.qatang.core.enums.OrderDirection;
 import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +19,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qatang
@@ -35,33 +34,58 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/user")
+@SessionAttributes("userForm")
 public class UserController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
     private PasswordHelper passwordHelper;
 
+    @ModelAttribute("orderDirectionList")
+    public List<OrderDirection> getOrderDirectionList() {
+        return OrderDirection.list();
+    }
+
+    @ModelAttribute("orderFieldMap")
+    public Map<String, String> getOrderFieldList() {
+        Map<String, String> orderFieldMap = new HashMap<>();
+        orderFieldMap.put("id", "编码");
+        orderFieldMap.put("createdTime", "创建时间");
+        return orderFieldMap;
+    }
+
     @ModelAttribute("enableDisableStatusList")
     public List<EnableDisableStatus> getEnableDisableStatusList() {
         return EnableDisableStatus.list();
     }
 
-//    @RequiresPermissions("sys:user:list")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(UserSearchable userSearchable, ModelMap modelMap) {
-//        userSearchable.setId("1,2");
-//        userSearchable.setUsername("qatang");
-//        userSearchable.setEmail("qatang");
-//        userSearchable.setMobile("138");
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.add(Calendar.DATE, -7);
-//        userSearchable.setBeginCreatedTime(calendar.getTime());
-//        userSearchable.setEndCreatedTime(new Date());
-//        userSearchable.setValid(EnableDisableStatus.ENABLE);
-        Pageable pageable = new PageRequest(0, 2, new Sort(Sort.Direction.DESC, "id"));
-//        userSearchable.setPageable(pageable);
+    @ModelAttribute("queryEnableDisableStatusList")
+    public List<EnableDisableStatus> getQueryEnableDisableStatusList() {
+        return EnableDisableStatus.listAll();
+    }
 
-        Page<User> page = userService.findAll(userSearchable);
+//    @RequiresPermissions("sys:user:list")
+    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public String list(UserForm userForm, ModelMap modelMap) {
+        String orderField = userForm.getOrderField();
+        if (StringUtils.isEmpty(orderField)) {
+            userForm.setOrderField("id");
+        }
+
+        Sort sort = new Sort(userForm.getOrderDirection() == OrderDirection.DESC ? Sort.Direction.DESC : Sort.Direction.ASC, userForm.getOrderField());
+        Pageable pageable = new PageRequest(userForm.currentPage - 1, userForm.getPageSize(), sort);
+
+        UserSearchable userSearchable = userForm.getSearchable();
+        if (userSearchable == null) {
+            userSearchable = new UserSearchable();
+            userForm.setSearchable(userSearchable);
+        }
+        userForm.getSearchable().setPageable(pageable);
+
+        Page<User> page = userService.findAll(userForm.getSearchable());
+
+        userForm.setTotalPages(page.getTotalPages());
+        userForm.setTotalSize(page.getTotalElements());
         modelMap.addAttribute("userList", page.getContent());
         return "user/list";
     }
