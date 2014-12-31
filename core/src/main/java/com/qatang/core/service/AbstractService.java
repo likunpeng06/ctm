@@ -1,11 +1,13 @@
 package com.qatang.core.service;
 
+import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.dao.IDao;
 import com.qatang.core.query.Searchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -43,11 +45,17 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 
     @Override
     public Page<T> findAll(Searchable searchable) {
-        return dao.findAll(searchable);
+        if (searchable == null) {
+            return dao.findAll(new PageRequest(0, GlobalConstants.DEFAULT_PAGE_SIZE));
+        }
+        return dao.findAll(searchable.getSpecification(), searchable.getPageable());
     }
 
     @Override
     public long count(Searchable searchable) {
-        return dao.count(searchable);
+        if (searchable == null) {
+            return dao.count();
+        }
+        return dao.count(searchable.getSpecification());
     }
 }

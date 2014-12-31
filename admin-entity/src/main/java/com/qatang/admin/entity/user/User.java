@@ -180,4 +180,8 @@ public class User extends AbstractEntity {
     public void setRoot(YesNoStatus root) {
         this.root = root;
     }
+
+    public YesNoStatus getRoot() {
+        return root;
+    }
 }

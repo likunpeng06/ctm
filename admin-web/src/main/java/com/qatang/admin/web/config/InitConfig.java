@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration
 @PropertySource("classpath:config.properties")
-@Import(value = {BeanConfig.class, JpaConfig.class, ShiroConfig.class})
+@Import(value = {BeanConfig.class, ShiroConfig.class, JpaConfig.class})
 public class InitConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {

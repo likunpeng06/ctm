@@ -65,16 +65,7 @@
                                             <td>${user.mobileValid.name}</td>
                                             <td><a href="${ctx}/user/update/${user.id}">修改</a></td>
                                             <td><a href="${ctx}/user/password/input/${user.id}">重置密码</a></td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${user.valid.value == 1}">
-                                                        <a href="${ctx}/user/disable/${user.id}">禁用</a>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <a href="${ctx}/user/enable/${user.id}">启用</a>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
+                                            <td><a href="${ctx}/user/delete/${user.id}" onclick="return confirm('确实要删除吗？');">删除</a></td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>

@@ -17,16 +17,14 @@ import javax.transaction.Transactional;
 @Transactional
 public class UserServiceImpl extends AbstractService<User, Long> implements UserService {
     @Autowired
-    private UserDao getUserDao() {
-        return (UserDao) dao;
-    }
+    private UserDao userDao;
 
     public User findByUsername(String username) {
-        return getUserDao().findByUsername(username);
+        return userDao.findByUsername(username);
     }
 
     @Override
     public User findByEmail(String email) {
-        return getUserDao().findByEmail(email);
+        return userDao.findByEmail(email);
     }
 }
