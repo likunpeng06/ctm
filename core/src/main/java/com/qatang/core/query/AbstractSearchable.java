@@ -20,7 +20,17 @@ public abstract class AbstractSearchable<T> implements Searchable<T> {
 
     private Pageable pageable;
 
-    private Sort sort;
+    private Sort sortable;
+
+    private String sort;
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
 
     @Override
     public Pageable getPageable() {
@@ -32,13 +42,14 @@ public abstract class AbstractSearchable<T> implements Searchable<T> {
     }
 
     @Override
-    public Sort getSort() {
-        return sort;
+    public Sort getSortable() {
+        return sortable;
     }
 
-    public void setSort(Sort sort) {
-        this.sort = sort;
+    public void setSortable(Sort sortable) {
+        this.sortable = sortable;
     }
+
 
     @Override
     public Specification<T> getSpecification() {

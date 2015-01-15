@@ -1,17 +1,36 @@
-@charset "utf-8";
+@CHARSET "UTF-8";
 
-body {
-    font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Segoe UI","Microsoft Yahei",Tahoma,Arial,STHeiti,sans-serif;
+.col-no {
+    width: 50px;
 }
 
-.login-box{
-    background: none repeat scroll 0 0 #FBFBFB;
-    border: 1px solid #E1E1E1;
-    box-shadow: 0 0 3px #EEEEEE, 0 0 3px #FFFFFF inset;
-    margin-top: 110px;
-    padding: 40px;
+/* Reduce the height of the .help-block element */
+.form-group-sm .help-block {
+    margin-bottom: -10px;
+    font-size: 12px;
 }
 
-.main{
-    padding-top: 60px;
+/* Override bootstrap default font-family */
+body,.tooltip,.popover {
+    font-family: "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
+    font-family: inherit;
+}
+
+/* fixed textarea height with 'form-group-sm' */
+textarea.form-control {
+    height: auto !important;
+}
+
+.list-group-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.navbar-brand>img {
+    height: 40px;
+    margin-top: -10px;
 }

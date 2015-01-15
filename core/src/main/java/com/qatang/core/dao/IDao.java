@@ -1,7 +1,5 @@
 package com.qatang.core.dao;
 
-import com.qatang.core.query.Searchable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

@@ -5,6 +5,7 @@ import com.qatang.admin.query.user.UserSearchable;
 import com.qatang.admin.service.user.UserService;
 import com.qatang.admin.web.form.user.UserForm;
 import com.qatang.admin.web.shiro.authentication.PasswordHelper;
+import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.OrderDirection;
@@ -12,9 +13,9 @@ import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/user")
-@SessionAttributes("userForm")
+@SessionAttributes("userSearchable")
 public class UserController extends BaseController {
     @Autowired
     private UserService userService;
@@ -65,28 +67,25 @@ public class UserController extends BaseController {
     }
 
 //    @RequiresPermissions("sys:user:list")
-    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public String list(UserForm userForm, ModelMap modelMap) {
-        String orderField = userForm.getOrderField();
-        if (StringUtils.isEmpty(orderField)) {
-            userForm.setOrderField("id");
-        }
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String list(UserSearchable userSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, ModelMap modelMap) {
+        userSearchable = new UserSearchable();
+        userSearchable.setPageable(pageable);
 
-        Sort sort = new Sort(userForm.getOrderDirection() == OrderDirection.DESC ? Sort.Direction.DESC : Sort.Direction.ASC, userForm.getOrderField());
-        Pageable pageable = new PageRequest(userForm.currentPage - 1, userForm.getPageSize(), sort);
+        Page<User> page = userService.findAll(userSearchable);
 
-        UserSearchable userSearchable = userForm.getSearchable();
-        if (userSearchable == null) {
-            userSearchable = new UserSearchable();
-            userForm.setSearchable(userSearchable);
-        }
-        userForm.getSearchable().setPageable(pageable);
+        modelMap.addAttribute("page", page);
+        return "user/list";
+    }
 
-        Page<User> page = userService.findAll(userForm.getSearchable());
+//    @RequiresPermissions("sys:user:list")
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    public String search(UserSearchable userSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
+        userSearchable.setPageable(pageable);
 
-        userForm.setTotalPages(page.getTotalPages());
-        userForm.setTotalSize(page.getTotalElements());
-        modelMap.addAttribute("userList", page.getContent());
+        Page<User> page = userService.findAll(userSearchable);
+
+        modelMap.addAttribute("page", page);
         return "user/list";
     }
 

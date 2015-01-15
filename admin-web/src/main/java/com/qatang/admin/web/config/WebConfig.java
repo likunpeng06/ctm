@@ -1,7 +1,7 @@
 package com.qatang.admin.web.config;
 
+import com.qatang.admin.web.controller.annotation.resolver.SearchFilterMethodArgumentResolver;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
-import com.qatang.core.converter.DateConverter;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
 import com.qatang.core.enums.converter.OrderDirectionConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
@@ -9,12 +9,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import java.util.List;
 
 /**
  * @author qatang
@@ -23,6 +28,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @Import(WebShiroConfig.class)
 @EnableWebMvc
+@EnableSpringDataWebSupport
 @ComponentScan(basePackages = "com.qatang.admin.web.controller", useDefaultFilters = false, includeFilters = @ComponentScan.Filter(value = {Controller.class, ControllerAdvice.class}))
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
@@ -62,7 +68,17 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         registry.addConverter(new YesNoStatusConverter());
         registry.addConverter(new EnableDisableStatusConverter());
         registry.addConverter(new OrderDirectionConverter());
-        registry.addConverter(new DateConverter());
+
+        DateFormatter dateFormatter = new DateFormatter("yyyy-MM-dd HH:mm:ss");
+        dateFormatter.setLenient(true);
+        registry.addFormatter(dateFormatter);
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        super.addArgumentResolvers(argumentResolvers);
+
+        argumentResolvers.add(new SearchFilterMethodArgumentResolver());
     }
 
     @Bean

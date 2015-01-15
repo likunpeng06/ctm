@@ -45,25 +45,25 @@
                 <input type="hidden" name="user.id" value="${userForm.user.id}"/>
                 <form:errors path="*" cssClass="alert alert-danger" element="div" role="alert"/>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">用户名</label>
-                    <div class="col-lg-6">
-                        ${userForm.user.username}
+                    <label class="col-md-3 control-label">用户名</label>
+                    <div class="col-md-6">
+                        <p class="form-control-static">${userForm.user.username}</p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">邮箱</label>
-                    <div class="col-lg-6">
-                        ${userForm.user.email}
+                    <label class="col-md-3 control-label">邮箱</label>
+                    <div class="col-md-6">
+                        <p class="form-control-static">${userForm.user.email}</p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">手机号</label>
-                    <div class="col-lg-6">
+                    <label class="col-md-3 control-label">手机号</label>
+                    <div class="col-md-6">
                         <input type="text" class="form-control" name="user.mobile" value="${userForm.user.mobile}">
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="col-lg-3 control-label" style="width:23%;">是否有效</label>
+                    <label class="col-md-3 control-label" style="width:23%;">是否有效</label>
                     <div class="form-group">
                         <label class="radio-inline">
                         <form:select cssClass="form-control" path="user.valid" items="${enableDisableStatusList}" itemValue="value" itemLabel="name"/>

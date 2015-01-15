@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 public interface Searchable<T> {
     public Pageable getPageable();
 
-    public Sort getSort();
+    public Sort getSortable();
 
     public Specification<T> getSpecification();
 }
