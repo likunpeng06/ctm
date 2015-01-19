@@ -1,84 +1,46 @@
 <%@page contentType="text/html; charset=utf-8"%>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="zh-cn">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>欢迎</title>
-    <meta http-equiv="pragma" content="no-cache" />
-    <meta http-equiv="keywords" content="" />
-    <meta http-equiv="description" content="" />
-    <link rel="stylesheet" href="${ctx}/resources/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${ctx}/resources/css/main.css">
-    <script src="${ctx}/resources/js/jquery-1.11.1.min.js"></script>
-    <script src="${ctx}/resources/js/bootstrap.min.js"></script>
-</head>
-<body>
-<%--<jsp:include page="/WEB-INF/jsp/navi.jsp"/>--%>
-<div class="container-fluid">
-<div class="col-lg-2">
-    <%--<jsp:include page="/WEB-INF/jsp/menu.jsp"/>--%>
-</div>
-<div class="col-lg-10">
-<ol class="breadcrumb">
-    <li><a href="#">系统管理</a></li>
-    <li><a href="${ctx}/user/list">用户管理</a></li>
-    <li class="active">
-        用户添加
-        <%--<c:choose>--%>
-        <%--<c:when test="${userForm.id == null}">--%>
-        <%--</c:when>--%>
-        <%--<c:otherwise>--%>
-            <%--用户修改--%>
-        <%--</c:otherwise>--%>
-    <%--</c:choose>--%>
-    </li>
-</ol>
-<%--<div class="login-single-panel-header">--%>
-    <%--<h5 style="color:red">${errorMessage}</h5>--%>
-<%--</div>--%>
-<div class="">
-    <legend class=""></legend>
-</div>
-    <div class="container">
+<frame:frame>
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">新建用户</div>
+            <div class="panel-body">
             <form:form class="form-horizontal" action="${ctx}/user/create" method="post" commandName="userForm">
                 <form:errors path="*" cssClass="alert alert-danger" element="div" role="alert"/>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">用户名</label>
-                    <div class="col-lg-6">
+                    <label class="col-sm-3 control-label">用户名</label>
+                    <div class="col-sm-6">
                         <input type="text" class="form-control" name="user.username" value="${userForm.user.username}" autofocus="" required="">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">密码</label>
-                    <div class="col-lg-6">
+                    <label class="col-sm-3 control-label">密码</label>
+                    <div class="col-sm-6">
                         <input type="password" class="form-control" name="user.password" value="${userForm.user.password}" required="">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">确认密码</label>
-                    <div class="col-lg-6">
+                    <label class="col-sm-3 control-label">确认密码</label>
+                    <div class="col-sm-6">
                         <input type="password" class="form-control" name="conPassword" value="${userForm.conPassword}" required="">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">邮箱</label>
-                    <div class="col-lg-6">
+                    <label class="col-sm-3 control-label">邮箱</label>
+                    <div class="col-sm-6">
                         <input type="text" class="form-control" name="user.email" value="${userForm.user.email}" required="">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">手机号</label>
-                    <div class="col-lg-6">
+                    <label class="col-sm-3 control-label">手机号</label>
+                    <div class="col-sm-6">
                         <input type="text" class="form-control" name="user.mobile" value="${userForm.user.mobile}">
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="col-lg-3 control-label" style="width:23%;">是否有效</label>
-                    <div class="form-group">
-                        <label class="radio-inline">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">是否有效</label>
+                    <div class="col-sm-6 form-inline">
                         <form:select cssClass="form-control" path="user.valid" items="${enableDisableStatusList}" itemValue="value" itemLabel="name"/>
-                        </label>
                     </div>
                 </div>
 
@@ -88,8 +50,7 @@
                     </div>
                 </div>
             </form:form>
+            </div>
+        </div>
     </div>
-    </div>
-</div>
-</body>
-</html>
+</frame:frame>

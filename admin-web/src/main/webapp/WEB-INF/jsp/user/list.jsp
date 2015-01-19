@@ -1,7 +1,6 @@
 <%@page contentType="text/html; charset=utf-8"%>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <frame:frame>
-
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading"><a href="${ctx}/user/create" class="btn btn-primary btn-sm">新建用户</a></div>
