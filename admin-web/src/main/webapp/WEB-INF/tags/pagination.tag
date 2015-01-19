@@ -27,10 +27,9 @@
 
     request.setAttribute("begin", begin);
     request.setAttribute("end", end);
-
 %>
 
-<form id="pageForm" class="form-inline" action="${ctx}/user/list" method="post">
+<form id="pageForm" class="form-inline" method="post">
     <input id="page" type="hidden" name="page" />
     <input id="sort" type="hidden" name="sort" />
     <ul class="pagination pagination-panel pagination-sm">
@@ -44,7 +43,7 @@
             </c:if>
         </c:forEach>
         <li><a href="#" onclick="goPage(${page.totalPages - 1});">尾页</a></li>
-        <li><span>共${page.totalPages}页，每页${page.size}条，总共${page.totalElements}条</span></li>
+        <li><span>共${page.totalPages}页，每页${page.size}条，共${page.totalElements}条</span></li>
     </ul>
 </form>
 

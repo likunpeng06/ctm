@@ -25,10 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author qatang
@@ -43,16 +40,13 @@ public class UserController extends BaseController {
     @Autowired
     private PasswordHelper passwordHelper;
 
-    @ModelAttribute("orderDirectionList")
-    public List<OrderDirection> getOrderDirectionList() {
-        return OrderDirection.list();
-    }
-
     @ModelAttribute("orderFieldMap")
     public Map<String, String> getOrderFieldList() {
-        Map<String, String> orderFieldMap = new HashMap<>();
-        orderFieldMap.put("id", "编码");
-        orderFieldMap.put("createdTime", "创建时间");
+        Map<String, String> orderFieldMap = new LinkedHashMap<>();
+        orderFieldMap.put("id,desc", "编码从大到小");
+        orderFieldMap.put("id,asc", "编码从小到大");
+        orderFieldMap.put("createdTime,desc", "创建时间从晚到早");
+        orderFieldMap.put("createdTime,asc", "创建时间从早到晚");
         return orderFieldMap;
     }
 

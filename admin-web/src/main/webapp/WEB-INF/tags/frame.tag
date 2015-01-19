@@ -42,7 +42,7 @@
 			<div id="navbar-collapse" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">qatang<span class="caret"></span></a>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> qatang <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="#">个人信息</a></li>
 							<li><a href="#">更改密码</a></li>
