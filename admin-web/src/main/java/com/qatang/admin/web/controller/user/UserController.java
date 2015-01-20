@@ -88,6 +88,7 @@ public class UserController extends BaseController {
         if (modelMap.containsKey(BINDING_RESULT_KEY)) {
             modelMap.addAttribute(BindingResult.class.getName().concat(".userForm"), modelMap.get(BINDING_RESULT_KEY));
         }
+        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
         return "user/create";
     }
 
@@ -172,6 +173,7 @@ public class UserController extends BaseController {
         }
 
         userForm.setUser(user);
+        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
         return "user/update";
     }
 

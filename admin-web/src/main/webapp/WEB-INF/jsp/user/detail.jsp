@@ -46,7 +46,7 @@
             </table>
         </div>
         <div class="text-center">
-            <a class="btn btn-primary btn-sm" href="${ctx}${forwardUrl}">返回列表</a>
+            <a class="btn btn-primary" href="${ctx}${forwardUrl}">返回列表</a>
         </div>
     </div>
 </frame:frame>

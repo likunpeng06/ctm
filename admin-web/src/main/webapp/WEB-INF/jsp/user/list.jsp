@@ -54,7 +54,7 @@
                             <form:select id="sort_query" path="userSearchable.sort" items="${orderFieldMap}" cssClass="form-control input-sm"/>
                         </div>
                         <div class="col-sm-6">
-                            <button id="query" class="btn btn-default" type="submit">查询</button>
+                            <button id="query" class="btn btn-primary" type="submit">查询</button>
                         </div>
                     </div>
                 </form>

@@ -35,6 +35,7 @@
                     <div class="form-group">
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">提交</button>
+                            <a class="btn btn-primary" href="${ctx}${forwardUrl}">返回列表</a>
                         </div>
                     </div>
                 </form:form>
