@@ -13,12 +13,10 @@ public class GlobalConstants {
     /**
      * 默认每页记录条数
      */
-    public static final int DEFAULT_PAGE_SIZE = 2;
+    public static final int DEFAULT_PAGE_SIZE = 50;
 
-    public static final String SEARCH_PREFIX = "search_";
-    public static final String PAGE_PREFIX = "page_";
-    public static final String SORT_PREFIX = "sort_";
-
-    public static final String PAGE_NUMBER = "pageNumber";
-    public static final String PAGE_SIZE = "pageSize";
+    /**
+     * 默认资源级数
+     */
+    public static final int DEFAULT_TREE_LEVEL = 3;
 }

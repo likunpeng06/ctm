@@ -1,9 +1,8 @@
 package com.qatang.admin.web.config;
 
-import com.qatang.admin.web.controller.annotation.resolver.SearchFilterMethodArgumentResolver;
+import com.qatang.admin.enums.converter.ResourceTypeConverter;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
-import com.qatang.core.enums.converter.OrderDirectionConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -67,7 +66,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         super.addFormatters(registry);
         registry.addConverter(new YesNoStatusConverter());
         registry.addConverter(new EnableDisableStatusConverter());
-        registry.addConverter(new OrderDirectionConverter());
+        registry.addConverter(new ResourceTypeConverter());
 
         DateFormatter dateFormatter = new DateFormatter("yyyy-MM-dd HH:mm:ss");
         dateFormatter.setLenient(true);
@@ -78,7 +77,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         super.addArgumentResolvers(argumentResolvers);
 
-        argumentResolvers.add(new SearchFilterMethodArgumentResolver());
+//        argumentResolvers.add(new SearchFilterMethodArgumentResolver());
     }
 
     @Bean

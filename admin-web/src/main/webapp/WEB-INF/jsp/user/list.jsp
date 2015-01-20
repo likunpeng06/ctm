@@ -79,7 +79,7 @@
                     <th>是否有效</th>
                     <th>邮箱是否已验证</th>
                     <th>手机是否已验证</th>
-                    <th colspan="3">操作</th>
+                    <th colspan="2">操作</th>
                 </tr>
                 </thead>
                 <tbody>

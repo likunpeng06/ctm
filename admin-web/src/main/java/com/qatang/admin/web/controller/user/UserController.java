@@ -8,7 +8,6 @@ import com.qatang.admin.web.shiro.authentication.PasswordHelper;
 import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
-import com.qatang.core.enums.OrderDirection;
 import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qatang
@@ -125,6 +127,10 @@ public class UserController extends BaseController {
             result.addError(new ObjectError("user.email", "{email.has.been.registered}"));
         }
 
+        if (userForm.getUser().getValid() == null) {
+            result.addError(new ObjectError("user.valid", "{user.valid.not.null}"));
+        }
+
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute(BINDING_RESULT_KEY, result);
             redirectAttributes.addFlashAttribute(userForm);
@@ -137,9 +143,9 @@ public class UserController extends BaseController {
         passwordHelper.encryptPassword(user);
         userService.save(user);
 
-        modelMap.addAttribute(SUCCESS_MESSAGE_KEY, "{success}");
-        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
-        return "success";
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+        return "redirect:/success";
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
@@ -207,9 +213,9 @@ public class UserController extends BaseController {
         updateUser.setUpdatedTime(new Date());
         userService.update(updateUser);
 
-        modelMap.addAttribute(SUCCESS_MESSAGE_KEY, "{success}");
-        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
-        return "success";
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+        return "redirect:/success";
     }
 
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)

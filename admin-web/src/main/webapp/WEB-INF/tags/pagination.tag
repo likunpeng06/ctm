@@ -29,6 +29,7 @@
     request.setAttribute("end", end);
 %>
 
+<c:if test="${end >= 0}">
 <form id="pageForm" class="form-inline" method="post">
     <input id="page" type="hidden" name="page" />
     <input id="sort" type="hidden" name="sort" />
@@ -58,4 +59,4 @@
         $("#pageForm").submit();
     }
 </script>
-
+</c:if>

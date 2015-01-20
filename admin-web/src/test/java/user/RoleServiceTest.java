@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {InitConfig.class})
-public class UserServiceTest {
+public class RoleServiceTest {
 
     @Autowired
     private UserService userService;
