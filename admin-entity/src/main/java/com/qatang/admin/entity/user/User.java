@@ -1,5 +1,6 @@
 package com.qatang.admin.entity.user;
 
+import com.qatang.admin.entity.role.Role;
 import com.qatang.core.entity.AbstractEntity;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author qatang
@@ -75,7 +77,7 @@ public class User extends AbstractEntity {
 
     @Convert(converter = EnableDisableStatusConverter.class)
     @Column(nullable = false)
-    private EnableDisableStatus valid = EnableDisableStatus.DISABLE;
+    private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
 
     @Convert(converter = YesNoStatusConverter.class)
     @Column(name = "email_valid", nullable = false)
@@ -88,6 +90,10 @@ public class User extends AbstractEntity {
     @Convert(converter = YesNoStatusConverter.class)
     @Column(name = "root", nullable = false)
     private YesNoStatus root = YesNoStatus.NO;
+
+    @ManyToMany
+    @JoinTable(name = "a_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles;
 
     public Long getId() {
         return id;
@@ -183,5 +189,17 @@ public class User extends AbstractEntity {
 
     public YesNoStatus getRoot() {
         return root;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public boolean contains(Role role) {
+        return roles != null && roles.contains(role);
     }
 }

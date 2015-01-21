@@ -12,6 +12,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>后台管理系统<c:if test="${!empty title}">--${title}</c:if></title>
 		<link href="${ctx}/resources/css/bootstrap.min.css" rel="stylesheet">
 		<%--<link href="${ctx}/resources/css/bootstrap${theme}.css" rel="stylesheet">--%>
 		<link href="${ctx}/resources/css/main.css" rel="stylesheet">

@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author qatang
@@ -44,7 +45,12 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
     }
 
     @Override
-    public Page<T> findAll(Searchable searchable) {
+    public List<T> findAll() {
+        return dao.findAll();
+    }
+
+    @Override
+    public Page<T> find(Searchable searchable) {
         if (searchable == null) {
             return dao.findAll(new PageRequest(0, GlobalConstants.DEFAULT_PAGE_SIZE));
         }

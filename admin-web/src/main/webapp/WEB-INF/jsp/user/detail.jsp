@@ -15,6 +15,10 @@
                     <td>${userForm.user.username}</td>
                 </tr>
                 <tr>
+                    <td>角色</td>
+                    <td><c:forEach items="${userForm.user.roles}" var="role">${role.name}&nbsp;&nbsp;</c:forEach></td>
+                </tr>
+                <tr>
                     <td>邮箱</td>
                     <td>${userForm.user.email}</td>
                 </tr>

@@ -71,7 +71,7 @@ public class ResourceController extends BaseController {
         resourceSearchable = new ResourceSearchable();
         resourceSearchable.setPageable(pageable);
 
-        Page<Resource> page = resourceService.findAll(resourceSearchable);
+        Page<Resource> page = resourceService.find(resourceSearchable);
 
         modelMap.addAttribute("page", page);
         return "resource/list";
@@ -82,7 +82,7 @@ public class ResourceController extends BaseController {
     public String search(ResourceSearchable resourceSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "orderField", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
         resourceSearchable.setPageable(pageable);
 
-        Page<Resource> page = resourceService.findAll(resourceSearchable);
+        Page<Resource> page = resourceService.find(resourceSearchable);
 
         modelMap.addAttribute("page", page);
         return "resource/list";

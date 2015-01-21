@@ -1,7 +1,9 @@
 package com.qatang.admin.web.controller.user;
 
+import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.entity.user.User;
 import com.qatang.admin.query.user.UserSearchable;
+import com.qatang.admin.service.role.RoleService;
 import com.qatang.admin.service.user.UserService;
 import com.qatang.admin.web.form.user.UserForm;
 import com.qatang.admin.web.shiro.authentication.PasswordHelper;
@@ -24,10 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author qatang
@@ -39,6 +38,8 @@ import java.util.Map;
 public class UserController extends BaseController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private PasswordHelper passwordHelper;
 
@@ -68,7 +69,7 @@ public class UserController extends BaseController {
         userSearchable = new UserSearchable();
         userSearchable.setPageable(pageable);
 
-        Page<User> page = userService.findAll(userSearchable);
+        Page<User> page = userService.find(userSearchable);
 
         modelMap.addAttribute("page", page);
         return "user/list";
@@ -79,7 +80,7 @@ public class UserController extends BaseController {
     public String search(UserSearchable userSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
         userSearchable.setPageable(pageable);
 
-        Page<User> page = userService.findAll(userSearchable);
+        Page<User> page = userService.find(userSearchable);
 
         modelMap.addAttribute("page", page);
         return "user/list";
@@ -286,5 +287,72 @@ public class UserController extends BaseController {
         userService.delete(user.getId());
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{delete.success}");
         return "redirect:/user/list";
+    }
+
+    @RequestMapping(value = "/allot/{id}", method = RequestMethod.GET)
+    public String allotRolesInput(@PathVariable String id, @ModelAttribute UserForm userForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (StringUtils.isEmpty(id)) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+        Long userId = null;
+        try {
+            userId = Long.valueOf(id);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        if (userId == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+
+        User user = userService.get(userId);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+
+        if (modelMap.containsKey(BINDING_RESULT_KEY)) {
+            modelMap.addAttribute(BindingResult.class.getName().concat(".userForm"), modelMap.get(BINDING_RESULT_KEY));
+        }
+
+        userForm.setUser(user);
+        modelMap.addAttribute("roles", roleService.findAll());
+        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
+        return "user/allot";
+    }
+
+    @RequestMapping(value = "/allot", method = RequestMethod.POST)
+    public String allotRoles(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (userForm == null || userForm.getUser() == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+
+        if (userForm.getUser().getId() == null) {
+            result.addError(new ObjectError("user.id", "{user.id.not.null}"));
+        }
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute(BINDING_RESULT_KEY, result);
+            redirectAttributes.addFlashAttribute(userForm);
+            return "redirect:/user/allot/" + userForm.getUser().getId();
+        }
+
+        User user = userForm.getUser();
+
+        User updateUser = userService.get(user.getId());
+
+        updateUser.setRoles(user.getRoles());
+
+        userService.update(updateUser);
+
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+        return "redirect:/success";
     }
 }

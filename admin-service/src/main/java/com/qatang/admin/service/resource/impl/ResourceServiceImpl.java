@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author qatang
@@ -21,6 +22,11 @@ public class ResourceServiceImpl extends AbstractService<Resource, Long> impleme
 
     public Resource findByIdentifier(String identifier) {
         return resourceDao.findByIdentifier(identifier);
+    }
+
+    @Override
+    public List<Resource> findByParentId(Long parentId) {
+        return resourceDao.findByParent_Id(parentId);
     }
 
 }

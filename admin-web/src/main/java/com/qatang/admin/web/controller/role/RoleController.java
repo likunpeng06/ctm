@@ -1,7 +1,10 @@
 package com.qatang.admin.web.controller.role;
 
+import com.alibaba.fastjson.JSON;
+import com.qatang.admin.entity.resource.Resource;
 import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.query.role.RoleSearchable;
+import com.qatang.admin.service.resource.ResourceService;
 import com.qatang.admin.service.role.RoleService;
 import com.qatang.admin.web.form.role.RoleForm;
 import com.qatang.core.constants.GlobalConstants;
@@ -23,10 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author qatang
@@ -38,6 +38,8 @@ import java.util.Map;
 public class RoleController extends BaseController {
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private ResourceService resourceService;
 
     @ModelAttribute("orderFieldMap")
     public Map<String, String> getOrderFieldList() {
@@ -65,7 +67,7 @@ public class RoleController extends BaseController {
         roleSearchable = new RoleSearchable();
         roleSearchable.setPageable(pageable);
 
-        Page<Role> page = roleService.findAll(roleSearchable);
+        Page<Role> page = roleService.find(roleSearchable);
 
         modelMap.addAttribute("page", page);
         return "role/list";
@@ -76,7 +78,7 @@ public class RoleController extends BaseController {
     public String search(RoleSearchable roleSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
         roleSearchable.setPageable(pageable);
 
-        Page<Role> page = roleService.findAll(roleSearchable);
+        Page<Role> page = roleService.find(roleSearchable);
 
         modelMap.addAttribute("page", page);
         return "role/list";
@@ -277,5 +279,124 @@ public class RoleController extends BaseController {
         roleService.delete(role.getId());
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{delete.success}");
         return "redirect:/role/list";
+    }
+
+    @RequestMapping(value = "/allot/{id}", method = RequestMethod.GET)
+    public String allotResourceInput(@PathVariable String id, @ModelAttribute RoleForm roleForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (StringUtils.isEmpty(id)) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
+            return "redirect:/error";
+        }
+        Long roleId = null;
+        try {
+            roleId = Long.valueOf(id);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        if (roleId == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
+            return "redirect:/error";
+        }
+
+        Role role = roleService.get(roleId);
+        if (role == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
+            return "redirect:/error";
+        }
+
+        if (modelMap.containsKey(BINDING_RESULT_KEY)) {
+            modelMap.addAttribute(BindingResult.class.getName().concat(".roleForm"), modelMap.get(BINDING_RESULT_KEY));
+        }
+
+        roleForm.setRole(role);
+//
+//        List<Resource> resources = resourceService.findByParentId(null);
+//
+//        List<Resource> checkedResources = role.getResources();
+//
+//        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
+//        for (Resource resource : resources) {
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("id", resource.getId());
+//            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
+//            map.put("name", resource.getName());
+//            if (checkedResources.contains(resource)) {
+//                map.put("checked", true);
+//            }
+//            resourcesJsonList.add(map);
+//        }
+//
+//        modelMap.addAttribute("resources", JSON.toJSONString(resourcesJsonList));
+        modelMap.addAttribute(FORWARD_URL_KEY, "/role/list");
+        return "role/allot";
+    }
+
+    @RequestMapping(value = "/allot", method = RequestMethod.POST)
+    public String allotResource(@Valid RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (roleForm == null || roleForm.getRole() == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
+            return "redirect:/error";
+        }
+
+        if (roleForm.getRole().getId() == null) {
+            result.addError(new ObjectError("role.id", "{role.id.not.null}"));
+        }
+
+        Role conRole = roleService.findByIdentifier(roleForm.getRole().getIdentifier());
+        if (conRole != null && conRole.getId().longValue() != roleForm.getRole().getId()) {
+            result.addError(new ObjectError("role.identifier", "{identifier.has.been.used}"));
+        }
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute(BINDING_RESULT_KEY, result);
+            redirectAttributes.addFlashAttribute(roleForm);
+            return "redirect:/role/allot/" + roleForm.getRole().getId();
+        }
+
+        Role role = roleForm.getRole();
+
+        Role updateRole = roleService.get(role.getId());
+
+        updateRole.setResources(role.getResources());
+
+        roleService.update(updateRole);
+
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
+        return "redirect:/success";
+    }
+
+
+    @RequestMapping(value = "{roleId}/resource", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String asyncGetData(@PathVariable Long roleId, Long parentId) {
+        List<Resource> resources = resourceService.findByParentId(parentId);
+        Role role = roleService.get(roleId);
+        if (role == null) {
+            logger.error("cannot find Role by roleId={}", roleId);
+            return null;
+        }
+
+        List<Resource> checkedResources = role.getResources();
+
+        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
+        for (Resource resource : resources) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", resource.getId());
+            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
+            map.put("name", resource.getName());
+            if (checkedResources.contains(resource)) {
+                map.put("checked", true);
+            }
+            if (resource.getChildren() != null && resource.getChildren().size() > 0) {
+                map.put("isParent", true);
+            }
+            resourcesJsonList.add(map);
+        }
+        return JSON.toJSONString(resourcesJsonList);
     }
 }

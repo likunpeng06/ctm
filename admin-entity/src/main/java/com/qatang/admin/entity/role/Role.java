@@ -1,5 +1,6 @@
 package com.qatang.admin.entity.role;
 
+import com.qatang.admin.entity.resource.Resource;
 import com.qatang.core.entity.AbstractEntity;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
@@ -11,6 +12,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author qatang
@@ -48,7 +51,7 @@ public class Role extends AbstractEntity {
 
     @Convert(converter = EnableDisableStatusConverter.class)
     @Column(nullable = false)
-    private EnableDisableStatus valid = EnableDisableStatus.DISABLE;
+    private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_time", updatable = false, nullable = false)
@@ -57,6 +60,10 @@ public class Role extends AbstractEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_time")
     private Date updatedTime;
+
+    @ManyToMany
+    @JoinTable(name = "a_role_resource", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "resource_id"))
+    private List<Resource> resources;
 
     public Long getId() {
         return id;
@@ -120,5 +127,13 @@ public class Role extends AbstractEntity {
 
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 }

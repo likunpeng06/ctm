@@ -79,7 +79,7 @@ public class Resource extends AbstractEntity {
 
     @Convert(converter = EnableDisableStatusConverter.class)
     @Column(nullable = false)
-    private EnableDisableStatus valid = EnableDisableStatus.DISABLE;
+    private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
 
     @Size(max = 512, message = "{resource.memo.invalid.length}")
     private String memo;
