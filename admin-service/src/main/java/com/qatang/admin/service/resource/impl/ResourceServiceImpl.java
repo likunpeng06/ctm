@@ -26,7 +26,7 @@ public class ResourceServiceImpl extends AbstractService<Resource, Long> impleme
 
     @Override
     public List<Resource> findByParentId(Long parentId) {
-        return resourceDao.findByParent_Id(parentId);
+        return resourceDao.findByParent_IdOrderByPriorityDesc(parentId);
     }
 
 }

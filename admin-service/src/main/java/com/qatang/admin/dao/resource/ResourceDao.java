@@ -12,5 +12,5 @@ import java.util.List;
 public interface ResourceDao extends IDao<Resource, Long> {
     public Resource findByIdentifier(String identifier);
 
-    public List<Resource> findByParent_Id(Long parentId);
+    public List<Resource> findByParent_IdOrderByPriorityDesc(Long parentId);
 }

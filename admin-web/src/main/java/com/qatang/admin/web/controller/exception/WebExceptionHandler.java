@@ -1,5 +1,6 @@
 package com.qatang.admin.web.controller.exception;
 
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,16 +20,20 @@ public class WebExceptionHandler {
 
     protected final transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /**
-     * Exception异常类处理
-     * @param exception 异常
-     * @return 跳转视图
-     */
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ModelAndView handleUnauthorizedException(HttpServletRequest request, UnauthorizedException exception) {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("url", request.getRequestURL());
+        mav.setViewName("redirect:/unauthorized");
+        return mav;
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ModelAndView handleException(HttpServletRequest request, Exception exception) {
-        logger.error(exception.getMessage(), exception);
         ModelAndView mav = new ModelAndView();
+        logger.error(exception.getMessage(), exception);
         mav.addObject("message", exception.getMessage());
         mav.addObject("exception", exception);
         mav.addObject("url", request.getRequestURL());

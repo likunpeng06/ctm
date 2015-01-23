@@ -8,7 +8,7 @@
                 <form role="form" id="queryForm" class="form-inline" action="${ctx}/user/list" method="post">
                     <div class="row">
                         <div class="form-group col-sm-3">
-                            <label for="userid" class="control-label">用户编码：</label>
+                            <label for="userid" class="control-label">编码：</label>
                             <input type="text" name="id" id="userid" value="${userSearchable.id}" class="form-control input-sm">
                         </div>
                         <div class="form-group col-sm-3">

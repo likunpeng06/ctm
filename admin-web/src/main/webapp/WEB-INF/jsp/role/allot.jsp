@@ -52,17 +52,12 @@
                 simpleData: {
                     enable: true
                 }
-            },
-            async: {
-                enable: true,
-                url: "${ctx}/role/${roleForm.role.id}/resource",
-                type: "post",
-                autoParam:["id=parentId"]
             }
         };
 
+        var data = ${resources};
         $(function(){
-            $.fn.zTree.init($("#resourceTree"), setting);
+            $.fn.zTree.init($("#resourceTree"), setting, data);
 
             var treeObj = $.fn.zTree.getZTreeObj("resourceTree");
 

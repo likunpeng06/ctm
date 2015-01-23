@@ -59,33 +59,28 @@
 	</nav>
 	<div class="container-fluid">
 		<div class="row">
-			<c:if test="${!empty navs[1]}">
+			<c:if test="${!empty menus}">
 			<div class="col-md-2">
-				<c:forEach items="${navs[1].children}" var="resource">
-				<c:if test="${!resource.hidden}">
+				<c:forEach items="${menus}" var="menu">
 				<div class="panel panel-default">
-					<div class="panel-heading">${resource.name}</div>
-					<ul class="list-group">
-						<c:forEach items="${resource.children}" var="resource">
-						<c:if test="${!resource.hidden}">
-						<li><a href="${ctx}/resource/${resource.id}" class="list-group-item ${resource eq navs[3]?'active':''}">${resource.name}</a></li>
-						</c:if>
+					<div class="panel-heading">${menu.name}</div>
+					<ul class="list-group list-unstyled">
+						<c:forEach items="${menu.children}" var="resource">
+						<li><a href="${ctx}${resource.url}" class="list-group-item ${resource eq currentResource?'active':''}">${resource.name}</a></li>
 						</c:forEach>
 					</ul>
 				</div>
-				</c:if>
 				</c:forEach>
 			</div>
 			</c:if>
-			<div class="col-md-${empty navs[1]?'12':'10'}">
+			<div class="col-md-${empty menus?'12':'10'}">
+				<c:if test="${!empty breadcrumb}">
 				<ol class="breadcrumb">
-					<%--<c:forEach items="${navs}" var="resource" begin="1">--%>
-					<%--<li><a href="${ctx}/resource/${resource.id}">${resource.name}</a></li>--%>
-					<%--</c:forEach>--%>
-					<li><a href="#">Home</a></li>
-					<li><a href="#">Library</a></li>
-					<li class="active">Data</li>
+					<c:forEach items="${breadcrumb}" var="resource">
+					<li><a href="${ctx}${resource.url}">${resource.name}</a></li>
+					</c:forEach>
 				</ol>
+				</c:if>
 				<jsp:doBody />
 			</div>
 		</div>

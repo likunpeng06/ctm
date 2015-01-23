@@ -15,6 +15,8 @@ public class UserForm extends AbstractForm {
     @Valid
     private User user;
     private String conPassword;
+    private String captcha;
+    private boolean rememberMe;
 
     public User getUser() {
         return user;
@@ -30,5 +32,21 @@ public class UserForm extends AbstractForm {
 
     public void setConPassword(String conPassword) {
         this.conPassword = conPassword;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 }

@@ -1,5 +1,6 @@
 package com.qatang.admin.web.config;
 
+import com.google.code.kaptcha.servlet.KaptchaServlet;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -49,9 +50,11 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
         servletContext.addFilter("openEntityManagerInViewFilter", new OpenEntityManagerInViewFilter()).addMappingForUrlPatterns(null, false, "/*");
 
-//        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
-//        delegatingFilterProxy.setTargetFilterLifecycle(true);
-//        servletContext.addFilter("shiroFilter", delegatingFilterProxy).addMappingForUrlPatterns(null, false, "/*");
+        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
+        delegatingFilterProxy.setTargetFilterLifecycle(true);
+        servletContext.addFilter("shiroFilter", delegatingFilterProxy).addMappingForUrlPatterns(null, false, "/*");
+
+        servletContext.addServlet("kaptcha", new KaptchaServlet()).addMapping("/kaptcha");
 
         super.onStartup(servletContext);
     }

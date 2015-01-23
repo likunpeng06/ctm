@@ -29,7 +29,6 @@ CREATE TABLE `a_resource` (
   `is_end` tinyint(2) NOT NULL DEFAULT '0',
   `memo` varchar(512) DEFAULT NULL,
   `name` varchar(32) NOT NULL,
-  `order_field` varchar(128) NOT NULL DEFAULT '',
   `priority` int(11) NOT NULL DEFAULT '0',
   `tree_level` int(11) NOT NULL,
   `type` int(11) NOT NULL,

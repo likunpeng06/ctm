@@ -19,4 +19,5 @@ public class GlobalConstants {
      * 默认资源级数
      */
     public static final int DEFAULT_TREE_LEVEL = 3;
+
 }

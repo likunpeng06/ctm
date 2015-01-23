@@ -11,7 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author qatang
@@ -55,16 +55,13 @@ public class Resource extends AbstractEntity {
     @Column(nullable = false)
     private Integer priority = 0;
 
-    @Column(name = "order_field", nullable = false)
-    private String orderField;
-
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Resource parent;
 
     @OneToMany(mappedBy = "parent")
     @OrderBy("id")
-    private Set<Resource> children;
+    private List<Resource> children;
 
     @Column(name = "is_end", nullable = false)
     private boolean isEnd = false;
@@ -148,11 +145,11 @@ public class Resource extends AbstractEntity {
         this.parent = parent;
     }
 
-    public Set<Resource> getChildren() {
+    public List<Resource> getChildren() {
         return children;
     }
 
-    public void setChildren(Set<Resource> children) {
+    public void setChildren(List<Resource> children) {
         this.children = children;
     }
 
@@ -194,13 +191,5 @@ public class Resource extends AbstractEntity {
 
     public void setEnd(boolean isEnd) {
         this.isEnd = isEnd;
-    }
-
-    public String getOrderField() {
-        return orderField;
-    }
-
-    public void setOrderField(String orderField) {
-        this.orderField = orderField;
     }
 }

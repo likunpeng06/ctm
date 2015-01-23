@@ -312,24 +312,24 @@ public class RoleController extends BaseController {
         }
 
         roleForm.setRole(role);
-//
-//        List<Resource> resources = resourceService.findByParentId(null);
-//
-//        List<Resource> checkedResources = role.getResources();
-//
-//        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
-//        for (Resource resource : resources) {
-//            Map<String, Object> map = new HashMap<>();
-//            map.put("id", resource.getId());
-//            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
-//            map.put("name", resource.getName());
-//            if (checkedResources.contains(resource)) {
-//                map.put("checked", true);
-//            }
-//            resourcesJsonList.add(map);
-//        }
-//
-//        modelMap.addAttribute("resources", JSON.toJSONString(resourcesJsonList));
+
+        List<Resource> resources = resourceService.findAll();
+
+        List<Resource> checkedResources = role.getResources();
+
+        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
+        for (Resource resource : resources) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", resource.getId());
+            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
+            map.put("name", resource.getName());
+            if (checkedResources.contains(resource)) {
+                map.put("checked", true);
+            }
+            resourcesJsonList.add(map);
+        }
+
+        modelMap.addAttribute("resources", JSON.toJSONString(resourcesJsonList));
         modelMap.addAttribute(FORWARD_URL_KEY, "/role/list");
         return "role/allot";
     }
@@ -371,32 +371,32 @@ public class RoleController extends BaseController {
     }
 
 
-    @RequestMapping(value = "{roleId}/resource", produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String asyncGetData(@PathVariable Long roleId, Long parentId) {
-        List<Resource> resources = resourceService.findByParentId(parentId);
-        Role role = roleService.get(roleId);
-        if (role == null) {
-            logger.error("cannot find Role by roleId={}", roleId);
-            return null;
-        }
-
-        List<Resource> checkedResources = role.getResources();
-
-        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
-        for (Resource resource : resources) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", resource.getId());
-            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
-            map.put("name", resource.getName());
-            if (checkedResources.contains(resource)) {
-                map.put("checked", true);
-            }
-            if (resource.getChildren() != null && resource.getChildren().size() > 0) {
-                map.put("isParent", true);
-            }
-            resourcesJsonList.add(map);
-        }
-        return JSON.toJSONString(resourcesJsonList);
-    }
+//    @RequestMapping(value = "{roleId}/resource", produces = "application/json;charset=UTF-8")
+//    @ResponseBody
+//    public String asyncGetData(@PathVariable Long roleId, Long parentId) {
+//        List<Resource> resources = resourceService.findByParentId(parentId);
+//        Role role = roleService.get(roleId);
+//        if (role == null) {
+//            logger.error("cannot find Role by roleId={}", roleId);
+//            return null;
+//        }
+//
+//        List<Resource> checkedResources = role.getResources();
+//
+//        List<Map<String, Object>> resourcesJsonList = new ArrayList<>();
+//        for (Resource resource : resources) {
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("id", resource.getId());
+//            map.put("pId", resource.getParent() == null ? 0 : resource.getParent().getId());
+//            map.put("name", resource.getName());
+//            if (checkedResources.contains(resource)) {
+//                map.put("checked", true);
+//            }
+//            if (resource.getChildren() != null && resource.getChildren().size() > 0) {
+//                map.put("isParent", true);
+//            }
+//            resourcesJsonList.add(map);
+//        }
+//        return JSON.toJSONString(resourcesJsonList);
+//    }
 }

@@ -10,6 +10,7 @@ import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,20 +36,9 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/resource")
-@SessionAttributes("resourceSearchable")
 public class ResourceController extends BaseController {
     @Autowired
     private ResourceService resourceService;
-
-    @ModelAttribute("orderFieldMap")
-    public Map<String, String> getOrderFieldList() {
-        Map<String, String> orderFieldMap = new LinkedHashMap<>();
-        orderFieldMap.put("id,asc", "编码从小到大");
-        orderFieldMap.put("id,desc", "编码从大到小");
-        orderFieldMap.put("createdTime,asc", "创建时间从早到晚");
-        orderFieldMap.put("createdTime,desc", "创建时间从晚到早");
-        return orderFieldMap;
-    }
 
     @ModelAttribute("enableDisableStatusList")
     public List<EnableDisableStatus> getEnableDisableStatusList() {
@@ -65,26 +55,24 @@ public class ResourceController extends BaseController {
         return ResourceType.list();
     }
 
-//    @RequiresPermissions("sys:resource:list")
+    @RequiresPermissions("sys:resource:list")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(ResourceSearchable resourceSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "orderField", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap) {
-        resourceSearchable = new ResourceSearchable();
-        resourceSearchable.setPageable(pageable);
+    public String list(ResourceForm resourceForm, ModelMap modelMap) {
+        Long parentId = null;
+        if (resourceForm.getResource() != null
+                && resourceForm.getResource().getParent() != null) {
+            parentId = resourceForm.getResource().getParent().getId();
+        }
 
-        Page<Resource> page = resourceService.find(resourceSearchable);
+        List<Resource> resourceList = resourceService.findByParentId(parentId);
 
-        modelMap.addAttribute("page", page);
-        return "resource/list";
-    }
+        Resource parentResource = null;
+        if (parentId != null) {
+            parentResource = resourceService.get(parentId);
+        }
 
-//    @RequiresPermissions("sys:resource:list")
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public String search(ResourceSearchable resourceSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "orderField", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
-        resourceSearchable.setPageable(pageable);
-
-        Page<Resource> page = resourceService.find(resourceSearchable);
-
-        modelMap.addAttribute("page", page);
+        modelMap.addAttribute("parentResource", parentResource);
+        modelMap.addAttribute("resourceList", resourceList);
         return "resource/list";
     }
 
@@ -132,21 +120,7 @@ public class ResourceController extends BaseController {
                 resource.setEnd(true);
             }
         }
-        Resource resourceNew = resourceService.save(resource);
-
-        String orderField = "";
-        if (resourceNew.getParent() != null) {
-            Resource resourceParent = resourceService.get(resourceNew.getParent().getId());
-            orderField = resourceParent.getOrderField();
-        }
-        StringBuilder sb = new StringBuilder(orderField);
-        if (resourceNew.getParent() != null) {
-            sb.append("_");
-        }
-        sb.append(resourceNew.getId());
-
-        resourceNew.setOrderField(sb.toString());
-        resourceService.update(resourceNew);
+        resourceService.save(resource);
 
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");

@@ -2,8 +2,10 @@ package com.qatang.admin.web.config;
 
 import com.qatang.admin.enums.converter.ResourceTypeConverter;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
+import com.qatang.admin.web.interceptor.MenuInterceptor;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,9 @@ import java.util.List;
 @EnableSpringDataWebSupport
 @ComponentScan(basePackages = "com.qatang.admin.web.controller", useDefaultFilters = false, includeFilters = @ComponentScan.Filter(value = {Controller.class, ControllerAdvice.class}))
 public class WebConfig extends WebMvcConfigurerAdapter {
+    @Autowired
+    private MenuInterceptor menuInterceptor;
+
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
@@ -52,7 +57,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         super.addViewControllers(registry);
         registry.addViewController("/error").setViewName("failure");
+        registry.addViewController("/").setViewName("redirect:/dashboard");
         registry.addViewController("/success").setViewName("success");
+        registry.addViewController("/unauthorized").setViewName("unauthorized");
     }
 
     @Override
@@ -78,6 +85,20 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         super.addArgumentResolvers(argumentResolvers);
 
 //        argumentResolvers.add(new SearchFilterMethodArgumentResolver());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        super.addInterceptors(registry);
+
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(menuInterceptor);
+        interceptorRegistration.addPathPatterns("/**");
+        interceptorRegistration.excludePathPatterns("/resources/**");
+        interceptorRegistration.excludePathPatterns("/signin");
+        interceptorRegistration.excludePathPatterns("/signup");
+        interceptorRegistration.excludePathPatterns("/kaptcha");
+        interceptorRegistration.excludePathPatterns("/user/password/forget");
+        interceptorRegistration.excludePathPatterns("/signout");
     }
 
     @Bean
