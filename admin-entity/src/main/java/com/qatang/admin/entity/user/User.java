@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -62,7 +63,7 @@ public class User extends AbstractEntity {
     @Column(nullable = false, length = 128)
     private String email;
 
-    @Pattern(regexp = MOBILE_PHONE_NUMBER_PATTERN, message = "手机号格式错误！")
+//    @Pattern(regexp = MOBILE_PHONE_NUMBER_PATTERN, message = "手机号格式错误！")
     @Column(length = 32)
     private String mobile;
 

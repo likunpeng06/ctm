@@ -1,6 +1,5 @@
 package com.qatang.core.form;
 
-import com.qatang.core.enums.OrderDirection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
