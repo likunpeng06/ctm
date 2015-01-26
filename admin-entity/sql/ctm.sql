@@ -16,6 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `a_log`
+--
+CREATE DATABASE `ctm` DEFAULT CHARACTER SET=utf8;
+
+use `ctm`;
+
+DROP TABLE IF EXISTS `a_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `a_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `created_time` datetime NOT NULL,
+  `params` varchar(1024) DEFAULT NULL,
+  `remote_ip` varchar(255) DEFAULT NULL,
+  `url` varchar(512) DEFAULT NULL,
+  `user_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_created_time` (`created_time`),
+  KEY `idx_url` (`url`),
+  KEY `idx_params` (`params`),
+  KEY `FK_tn4cs37cjlt5edkak47uqxc6k` (`user_id`),
+  CONSTRAINT `FK_tn4cs37cjlt5edkak47uqxc6k` FOREIGN KEY (`user_id`) REFERENCES `a_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `a_resource`
 --
 
@@ -26,15 +52,15 @@ CREATE TABLE `a_resource` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created_time` datetime NOT NULL,
   `identifier` varchar(32) DEFAULT NULL,
-  `is_end` tinyint(2) NOT NULL DEFAULT '0',
+  `is_end` tinyint(2) NOT NULL,
   `memo` varchar(512) DEFAULT NULL,
   `name` varchar(32) NOT NULL,
-  `priority` int(11) NOT NULL DEFAULT '0',
+  `priority` int(11) NOT NULL,
   `tree_level` int(11) NOT NULL,
-  `type` int(11) NOT NULL,
+  `type` tinyint(2) NOT NULL,
   `updated_time` datetime DEFAULT NULL,
   `url` varchar(512) DEFAULT NULL,
-  `valid` int(11) NOT NULL,
+  `valid` tinyint(2) NOT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_created_time` (`created_time`),
@@ -55,11 +81,11 @@ CREATE TABLE `a_role` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created_time` datetime NOT NULL,
   `description` varchar(512) DEFAULT NULL,
-  `identifier` varchar(32) NOT NULL DEFAULT '',
-  `is_default` int(11) NOT NULL,
-  `name` varchar(32) NOT NULL DEFAULT '',
+  `identifier` varchar(32) NOT NULL,
+  `is_default` tinyint(2) NOT NULL,
+  `name` varchar(32) NOT NULL,
   `updated_time` datetime DEFAULT NULL,
-  `valid` int(11) NOT NULL,
+  `valid` tinyint(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_identifier` (`identifier`),
   KEY `idx_created_time` (`created_time`)
@@ -94,18 +120,18 @@ CREATE TABLE `a_user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created_time` datetime NOT NULL,
   `email` varchar(128) NOT NULL,
-  `email_valid` int(11) NOT NULL,
+  `email_valid` tinyint(2) NOT NULL,
   `mobile` varchar(32) DEFAULT NULL,
-  `mobile_valid` int(11) NOT NULL,
+  `mobile_valid` tinyint(2) NOT NULL,
   `password` varchar(32) NOT NULL,
+  `root` tinyint(2) NOT NULL,
   `salt` varchar(64) NOT NULL,
   `updated_time` datetime DEFAULT NULL,
-  `username` varchar(20) NOT NULL,
-  `valid` int(11) NOT NULL,
-  `root` int(11) NOT NULL,
+  `username` varchar(20) DEFAULT NULL,
+  `valid` tinyint(2) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_username` (`username`),
   UNIQUE KEY `uk_email` (`email`),
+  UNIQUE KEY `uk_username` (`username`),
   KEY `idx_created_time` (`created_time`),
   KEY `idx_valid` (`valid`),
   KEY `idx_valid_email_mobile` (`email_valid`,`mobile_valid`)
@@ -122,8 +148,8 @@ DROP TABLE IF EXISTS `a_user_role`;
 CREATE TABLE `a_user_role` (
   `user_id` bigint(20) NOT NULL,
   `role_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`user_id`,`role_id`),
   KEY `FK_iiwagecyg3i395876hrjmddp0` (`role_id`),
+  KEY `FK_i0eyspudq2c39c9e8qss1l7s5` (`user_id`),
   CONSTRAINT `FK_i0eyspudq2c39c9e8qss1l7s5` FOREIGN KEY (`user_id`) REFERENCES `a_user` (`id`),
   CONSTRAINT `FK_iiwagecyg3i395876hrjmddp0` FOREIGN KEY (`role_id`) REFERENCES `a_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -138,4 +164,4 @@ CREATE TABLE `a_user_role` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-21 17:18:17
+-- Dump completed on 2015-01-26 11:27:51

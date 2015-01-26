@@ -1,5 +1,10 @@
-<%@page contentType="text/html; charset=utf-8"%>
+<%@ page contentType="text/html; charset=utf-8"%>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
+<%@ page import="java.util.Date" %>
+<%
+  Date now = new Date();
+  request.setAttribute("now", now);
+%>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -11,6 +16,25 @@
   <%--<link href="${ctx}/resources/css/bootstrap${theme}.css" rel="stylesheet">--%>
   <link href="${ctx}/resources/css/main.css" rel="stylesheet">
   <link rel="stylesheet" href="${ctx}/resources/css/datetimepicker/bootstrap-datetimepicker.min.css">
+  <style type="text/css">
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+    position: relative;
+    min-height: 100%;
+    }
+    body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    }
+    .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    }
+  </style>
 
   <!--[if lt IE 9]>
   <script src="${ctx}/resources/js/html5shiv.min.js"></script>
@@ -69,7 +93,7 @@
       <div class="col-sm-offset-4 col-sm-4">
         <div class="checkbox">
           <label>
-            <input type="checkbox" name="rememberMe"> 记住我
+            <input type="checkbox" name="rememberMe"> 记住我一个星期
           </label>
         </div>
       </div>
@@ -81,5 +105,10 @@
     </div>
   </form:form>
 </div>
+<footer class="footer">
+  <div class="container-fluid">
+    <p class="text-muted text-center">Copyright &copy; 2007-<fmt:formatDate value="${now}" pattern="yyyy"/> qatang.com All rights reserved.</p>
+  </div>
+</footer>
 </body>
 </html>

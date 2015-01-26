@@ -12,6 +12,7 @@ import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,7 +62,7 @@ public class RoleController extends BaseController {
         return YesNoStatus.list();
     }
 
-//    @RequiresPermissions("sys:role:list")
+    @RequiresPermissions("sys:role:list")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(RoleSearchable roleSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap) {
         roleSearchable = new RoleSearchable();
@@ -73,7 +74,7 @@ public class RoleController extends BaseController {
         return "role/list";
     }
 
-//    @RequiresPermissions("sys:role:list")
+    @RequiresPermissions("sys:role:list")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public String search(RoleSearchable roleSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.ASC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
         roleSearchable.setPageable(pageable);
@@ -84,6 +85,7 @@ public class RoleController extends BaseController {
         return "role/list";
     }
 
+    @RequiresPermissions("sys:role:create")
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createInput(@ModelAttribute RoleForm roleForm, ModelMap modelMap) {
         if (modelMap.containsKey(BINDING_RESULT_KEY)) {
@@ -93,32 +95,34 @@ public class RoleController extends BaseController {
         return "role/create";
     }
 
+    @RequiresPermissions("sys:role:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@Valid RoleForm roleForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
         if (roleForm == null || roleForm.getRole() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("新建角色错误：roleForm或者roleForm.role对象为空");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
         if (StringUtils.isEmpty(roleForm.getRole().getIdentifier())) {
-            result.addError(new ObjectError("role.identifier", "{not.null}"));
+            result.addError(new ObjectError("role.identifier", "标识符不能为空！"));
         }
 
         if (StringUtils.isEmpty(roleForm.getRole().getName())) {
-            result.addError(new ObjectError("role.name", "{not.null}"));
+            result.addError(new ObjectError("role.name", "角色名称不能为空！"));
         }
 
         if (roleForm.getRole().getIsDefault() == null) {
-            result.addError(new ObjectError("role.isDefault", "{role.isDefault.not.null}"));
+            result.addError(new ObjectError("role.isDefault", "是否为默认角色不能为空！"));
         }
 
         if (roleForm.getRole().getValid() == null) {
-            result.addError(new ObjectError("role.valid", "{role.valid.not.null}"));
+            result.addError(new ObjectError("role.valid", "是否有效不能为空！"));
         }
 
         Role conRole = roleService.findByIdentifier(roleForm.getRole().getIdentifier());
         if (conRole != null) {
-            result.addError(new ObjectError("role.identifier", "{identifier.has.been.used}"));
+            result.addError(new ObjectError("role.identifier", "标识符已被使用！"));
         }
 
         if (result.hasErrors()) {
@@ -130,15 +134,17 @@ public class RoleController extends BaseController {
         Role role = roleForm.getRole();
         roleService.save(role);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:role:update")
     @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
     public String updateInput(@PathVariable String id, @ModelAttribute RoleForm roleForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改角色错误：role.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -146,17 +152,19 @@ public class RoleController extends BaseController {
         try {
             roleId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("修改角色错误：role.id不能转换成Long类型！role.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (roleId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         Role role = roleService.get(roleId);
         if (role == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改角色错误：未查询到role.id={}的角色！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -170,29 +178,31 @@ public class RoleController extends BaseController {
         return "role/update";
     }
 
+    @RequiresPermissions("sys:role:update")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@Valid RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (roleForm == null || roleForm.getRole() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("修改角色错误：roleForm或者roleForm.role对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         if (roleForm.getRole().getId() == null) {
-            result.addError(new ObjectError("role.id", "{role.id.not.null}"));
+            result.addError(new ObjectError("role.id", "角色编码不能为空！"));
         }
 
         if (roleForm.getRole().getIsDefault() == null) {
-            result.addError(new ObjectError("role.isDefault", "{role.isDefault.not.null}"));
+            result.addError(new ObjectError("role.isDefault", "是否为默认角色不能为空！"));
         }
 
         if (roleForm.getRole().getValid() == null) {
-            result.addError(new ObjectError("role.valid", "{role.valid.not.null}"));
+            result.addError(new ObjectError("role.valid", "是否有效不能为空！"));
         }
 
         Role conRole = roleService.findByIdentifier(roleForm.getRole().getIdentifier());
         if (conRole != null && conRole.getId().longValue() != roleForm.getRole().getId()) {
-            result.addError(new ObjectError("role.identifier", "{identifier.has.been.used}"));
+            result.addError(new ObjectError("role.identifier", "标识符已被使用！"));
         }
 
         if (result.hasErrors()) {
@@ -212,15 +222,17 @@ public class RoleController extends BaseController {
         updateRole.setUpdatedTime(new Date());
         roleService.update(updateRole);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:role:view")
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String view(@PathVariable String id, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查看角色错误：role.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -228,17 +240,19 @@ public class RoleController extends BaseController {
         try {
             roleId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("查看角色错误：role.id不能转换成Long类型！role.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (roleId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         Role role = roleService.get(roleId);
         if (role == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查看角色错误：未查询到role.id={}的角色！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -250,10 +264,12 @@ public class RoleController extends BaseController {
         return "role/detail";
     }
 
+    @RequiresPermissions("sys:role:delete")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除角色错误：role.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -261,30 +277,34 @@ public class RoleController extends BaseController {
         try {
             roleId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("删除角色错误：role.id不能转换成Long类型！role.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (roleId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         Role role = roleService.get(roleId);
         if (role == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除角色错误：未查询到role.id={}的角色！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         roleService.delete(role.getId());
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{delete.success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         return "redirect:/role/list";
     }
 
+    @RequiresPermissions("sys:role:allot")
     @RequestMapping(value = "/allot/{id}", method = RequestMethod.GET)
     public String allotResourceInput(@PathVariable String id, @ModelAttribute RoleForm roleForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("分配资源错误：role.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -292,17 +312,19 @@ public class RoleController extends BaseController {
         try {
             roleId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("分配资源错误：role.id不能转换成Long类型！role.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (roleId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         Role role = roleService.get(roleId);
         if (role == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("分配资源错误：未查询到role.id={}的角色！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
@@ -334,21 +356,22 @@ public class RoleController extends BaseController {
         return "role/allot";
     }
 
+    @RequiresPermissions("sys:role:allot")
     @RequestMapping(value = "/allot", method = RequestMethod.POST)
     public String allotResource(@Valid RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (roleForm == null || roleForm.getRole() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
             return "redirect:/error";
         }
 
         if (roleForm.getRole().getId() == null) {
-            result.addError(new ObjectError("role.id", "{role.id.not.null}"));
+            result.addError(new ObjectError("role.id", "角色编码不能为空！"));
         }
 
         Role conRole = roleService.findByIdentifier(roleForm.getRole().getIdentifier());
         if (conRole != null && conRole.getId().longValue() != roleForm.getRole().getId()) {
-            result.addError(new ObjectError("role.identifier", "{identifier.has.been.used}"));
+            result.addError(new ObjectError("role.identifier", "标识符已被使用！"));
         }
 
         if (result.hasErrors()) {
@@ -365,7 +388,7 @@ public class RoleController extends BaseController {
 
         roleService.update(updateRole);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
         return "redirect:/success";
     }

@@ -44,19 +44,19 @@ public class SigninController extends BaseController {
     @RequestMapping(value = "/signin", method = RequestMethod.POST)
     public String signin(UserForm userForm, @ModelAttribute(kaptchaSessionKey) String captchaExpected, BindingResult result, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         if (StringUtils.isEmpty(userForm.getUser().getUsername())) {
-            result.addError(new ObjectError("user.username", "{not.null}"));
+            result.addError(new ObjectError("user.username", "用户名不能为空！"));
         }
 
         if (StringUtils.isEmpty(userForm.getUser().getPassword())) {
-            result.addError(new ObjectError("user.password", "{not.null}"));
+            result.addError(new ObjectError("user.password", "密码不能为空！"));
         }
 
         if (StringUtils.isEmpty(userForm.getCaptcha())) {
-            result.addError(new ObjectError("captcha", "{not.null}"));
+            result.addError(new ObjectError("captcha", "验证码不能为空！"));
         }
 
         if (!userForm.getCaptcha().equals(captchaExpected)) {
-            result.addError(new ObjectError("captcha", "{captcha.fields.must.match}"));
+            result.addError(new ObjectError("captcha", "验证码不匹配！"));
         }
 
         if (result.hasErrors()) {
@@ -74,7 +74,7 @@ public class SigninController extends BaseController {
             subject.login(usernamePasswordToken);
         } catch (AuthenticationException e) {
             if (e instanceof IncorrectCredentialsException) {
-                result.addError(new ObjectError("user.username", "{username.password.not.correct}"));
+                result.addError(new ObjectError("user.username", "用户名或密码不正确！"));
             } else {
                 result.addError(new ObjectError("user.username", e.getMessage()));
             }

@@ -36,13 +36,13 @@ public class Role extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "{role.identifier.invalid.length}")
+    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "标识符长度错误！")
     @Column(nullable = false)
     private String identifier;
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "{role.name.invalid.length}")
+    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "角色名称长度错误！")
     @Column(nullable = false)
     private String name;
-    @Size(max = 512, message = "{role.description.invalid.length}")
+    @Size(max = 512, message = "描述长度错误！")
     private String description;
 
     @Convert(converter = YesNoStatusConverter.class)

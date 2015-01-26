@@ -12,6 +12,7 @@ import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +64,7 @@ public class UserController extends BaseController {
         return EnableDisableStatus.listAll();
     }
 
-//    @RequiresPermissions("sys:user:list")
+    @RequiresPermissions("sys:user:list")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(UserSearchable userSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, ModelMap modelMap) {
         userSearchable = new UserSearchable();
@@ -75,7 +76,7 @@ public class UserController extends BaseController {
         return "user/list";
     }
 
-//    @RequiresPermissions("sys:user:list")
+    @RequiresPermissions("sys:user:list")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public String search(UserSearchable userSearchable, @PageableDefault(size = GlobalConstants.DEFAULT_PAGE_SIZE, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, ModelMap modelMap, HttpServletRequest request) {
         userSearchable.setPageable(pageable);
@@ -86,6 +87,7 @@ public class UserController extends BaseController {
         return "user/list";
     }
 
+    @RequiresPermissions("sys:user:create")
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createInput(@ModelAttribute UserForm userForm, ModelMap modelMap) {
         if (modelMap.containsKey(BINDING_RESULT_KEY)) {
@@ -95,41 +97,43 @@ public class UserController extends BaseController {
         return "user/create";
     }
 
+    @RequiresPermissions("sys:user:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@Valid UserForm userForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
         if (userForm == null || userForm.getUser() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("新建用户错误：userForm或者userForm.user对象为空");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
         if (StringUtils.isEmpty(userForm.getUser().getUsername())) {
-            result.addError(new ObjectError("user.username", "{not.null}"));
+            result.addError(new ObjectError("user.username", "用户名不能为空！"));
         }
 
         if (StringUtils.isEmpty(userForm.getUser().getEmail())) {
-            result.addError(new ObjectError("user.email", "{not.null}"));
+            result.addError(new ObjectError("user.email", "邮箱不能为空！"));
         }
 
         if (StringUtils.isEmpty(userForm.getUser().getPassword()) || StringUtils.isEmpty(userForm.getConPassword())) {
-            result.addError(new ObjectError("user.password", "{not.null}"));
+            result.addError(new ObjectError("user.password", "密码不能为空！"));
         }
 
         if (!userForm.getConPassword().equals(userForm.getUser().getPassword())) {
-            result.addError(new ObjectError("user.password", "{password.fields.must.match}"));
+            result.addError(new ObjectError("user.password", "密码与确认密码不匹配！"));
         }
 
         User conUser = userService.findByUsername(userForm.getUser().getUsername());
         if (conUser != null) {
-            result.addError(new ObjectError("user.username", "{username.has.been.registered}"));
+            result.addError(new ObjectError("user.username", "用户名已经被注册！"));
         }
 
         conUser = userService.findByEmail(userForm.getUser().getEmail());
         if (conUser != null) {
-            result.addError(new ObjectError("user.email", "{email.has.been.registered}"));
+            result.addError(new ObjectError("user.email", "邮箱已经被注册！"));
         }
 
         if (userForm.getUser().getValid() == null) {
-            result.addError(new ObjectError("user.valid", "{user.valid.not.null}"));
+            result.addError(new ObjectError("user.valid", "用户有效状态不能为空！"));
         }
 
         if (result.hasErrors()) {
@@ -144,15 +148,17 @@ public class UserController extends BaseController {
         passwordHelper.encryptPassword(user);
         userService.save(user);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:user:update")
     @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
     public String updateInput(@PathVariable String id, @ModelAttribute UserForm userForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改用户错误：user.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -160,17 +166,19 @@ public class UserController extends BaseController {
         try {
             userId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("修改用户错误：user.id不能转换成Long类型！user.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (userId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         User user = userService.get(userId);
         if (user == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改用户错误：未查询到user.id={}的用户！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -184,10 +192,12 @@ public class UserController extends BaseController {
         return "user/update";
     }
 
+    @RequiresPermissions("sys:user:update")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (userForm == null || userForm.getUser() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("修改用户错误：userForm或者userForm.user对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -214,15 +224,17 @@ public class UserController extends BaseController {
         updateUser.setUpdatedTime(new Date());
         userService.update(updateUser);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:user:view")
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String view(@PathVariable String id, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查看用户错误：user.id对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -230,17 +242,19 @@ public class UserController extends BaseController {
         try {
             userId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("查看用户错误：user.id不能转换成Long类型！user.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (userId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         User user = userService.get(userId);
         if (user == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查询用户错误：未查询到user.id={}的用户！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -252,10 +266,12 @@ public class UserController extends BaseController {
         return "user/detail";
     }
 
+    @RequiresPermissions("sys:user:delete")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除用户错误：user.id对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -263,36 +279,41 @@ public class UserController extends BaseController {
         try {
             userId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("删除用户错误：user.id不能转换成Long类型！user.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (userId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         User user = userService.get(userId);
         if (user == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除用户错误：未查询到user.id={}的用户！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         if (user.getRoot() == YesNoStatus.YES) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{delete.invalid}");
+            logger.error("删除用户错误：root用户无法删除！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "root用户无法删除！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
-            return "redirect:/error";
+            return "redirect:/user/list";
         }
 
         userService.delete(user.getId());
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{delete.success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         return "redirect:/user/list";
     }
 
+    @RequiresPermissions("sys:user:allot")
     @RequestMapping(value = "/allot/{id}", method = RequestMethod.GET)
     public String allotRolesInput(@PathVariable String id, @ModelAttribute UserForm userForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("分配角色错误：user.id对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -300,17 +321,19 @@ public class UserController extends BaseController {
         try {
             userId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("分配角色错误：user.id不能转换成Long类型！user.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (userId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         User user = userService.get(userId);
         if (user == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("分配角色错误：未查询到user.id={}的用户！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
@@ -325,16 +348,17 @@ public class UserController extends BaseController {
         return "user/allot";
     }
 
+    @RequiresPermissions("sys:user:allot")
     @RequestMapping(value = "/allot", method = RequestMethod.POST)
     public String allotRoles(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (userForm == null || userForm.getUser() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
             return "redirect:/error";
         }
 
         if (userForm.getUser().getId() == null) {
-            result.addError(new ObjectError("user.id", "{user.id.not.null}"));
+            result.addError(new ObjectError("user.id", "用户编码不能为空！"));
         }
 
         if (result.hasErrors()) {
@@ -351,7 +375,7 @@ public class UserController extends BaseController {
 
         userService.update(updateUser);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
         return "redirect:/success";
     }

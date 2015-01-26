@@ -107,7 +107,7 @@ public class InitConfig {
                     Resource resource1_1_3 = new Resource();
                     resource1_1_3.setIdentifier("sys:user:update");
                     resource1_1_3.setName("用户修改");
-                    resource1_1_3.setUrl("/user/update");
+                    resource1_1_3.setUrl("/user/update/**");
                     resource1_1_3.setValid(EnableDisableStatus.ENABLE);
                     resource1_1_3.setTreeLevel(2);
                     resource1_1_3.setEnd(true);
@@ -120,7 +120,7 @@ public class InitConfig {
                     Resource resource1_1_4 = new Resource();
                     resource1_1_4.setIdentifier("sys:user:view");
                     resource1_1_4.setName("用户查看");
-                    resource1_1_4.setUrl("/user/view");
+                    resource1_1_4.setUrl("/user/view/**");
                     resource1_1_4.setValid(EnableDisableStatus.ENABLE);
                     resource1_1_4.setTreeLevel(2);
                     resource1_1_4.setEnd(true);
@@ -133,7 +133,7 @@ public class InitConfig {
                     Resource resource1_1_5 = new Resource();
                     resource1_1_5.setIdentifier("sys:user:delete");
                     resource1_1_5.setName("用户删除");
-                    resource1_1_5.setUrl("/user/detele");
+                    resource1_1_5.setUrl("/user/delete/**");
                     resource1_1_5.setValid(EnableDisableStatus.ENABLE);
                     resource1_1_5.setTreeLevel(2);
                     resource1_1_5.setEnd(true);
@@ -146,7 +146,7 @@ public class InitConfig {
                     Resource resource1_1_6 = new Resource();
                     resource1_1_6.setIdentifier("sys:user:allot");
                     resource1_1_6.setName("分配角色");
-                    resource1_1_6.setUrl("/user/allot");
+                    resource1_1_6.setUrl("/user/allot/**");
                     resource1_1_6.setValid(EnableDisableStatus.ENABLE);
                     resource1_1_6.setTreeLevel(2);
                     resource1_1_6.setEnd(true);
@@ -199,7 +199,7 @@ public class InitConfig {
                     Resource resource1_2_3 = new Resource();
                     resource1_2_3.setIdentifier("sys:role:update");
                     resource1_2_3.setName("角色修改");
-                    resource1_2_3.setUrl("/role/update");
+                    resource1_2_3.setUrl("/role/update/**");
                     resource1_2_3.setValid(EnableDisableStatus.ENABLE);
                     resource1_2_3.setTreeLevel(2);
                     resource1_2_3.setEnd(true);
@@ -212,7 +212,7 @@ public class InitConfig {
                     Resource resource1_2_4 = new Resource();
                     resource1_2_4.setIdentifier("sys:role:view");
                     resource1_2_4.setName("角色查看");
-                    resource1_2_4.setUrl("/role/view");
+                    resource1_2_4.setUrl("/role/view/**");
                     resource1_2_4.setValid(EnableDisableStatus.ENABLE);
                     resource1_2_4.setTreeLevel(2);
                     resource1_2_4.setEnd(true);
@@ -225,7 +225,7 @@ public class InitConfig {
                     Resource resource1_2_5 = new Resource();
                     resource1_2_5.setIdentifier("sys:role:delete");
                     resource1_2_5.setName("角色删除");
-                    resource1_2_5.setUrl("/role/detele");
+                    resource1_2_5.setUrl("/role/delete/**");
                     resource1_2_5.setValid(EnableDisableStatus.ENABLE);
                     resource1_2_5.setTreeLevel(2);
                     resource1_2_5.setEnd(true);
@@ -238,7 +238,7 @@ public class InitConfig {
                     Resource resource1_2_6 = new Resource();
                     resource1_2_6.setIdentifier("sys:role:allot");
                     resource1_2_6.setName("分配资源");
-                    resource1_2_6.setUrl("/role/allot");
+                    resource1_2_6.setUrl("/role/allot/**");
                     resource1_2_6.setValid(EnableDisableStatus.ENABLE);
                     resource1_2_6.setTreeLevel(2);
                     resource1_2_6.setEnd(true);
@@ -304,7 +304,7 @@ public class InitConfig {
                     Resource resource1_3_3 = new Resource();
                     resource1_3_3.setIdentifier("sys:resource:update");
                     resource1_3_3.setName("资源修改");
-                    resource1_3_3.setUrl("/resource/update");
+                    resource1_3_3.setUrl("/resource/update/**");
                     resource1_3_3.setValid(EnableDisableStatus.ENABLE);
                     resource1_3_3.setTreeLevel(2);
                     resource1_3_3.setEnd(true);
@@ -317,7 +317,7 @@ public class InitConfig {
                     Resource resource1_3_4 = new Resource();
                     resource1_3_4.setIdentifier("sys:resource:view");
                     resource1_3_4.setName("资源查看");
-                    resource1_3_4.setUrl("/resource/view");
+                    resource1_3_4.setUrl("/resource/view/**");
                     resource1_3_4.setValid(EnableDisableStatus.ENABLE);
                     resource1_3_4.setTreeLevel(2);
                     resource1_3_4.setEnd(true);
@@ -330,7 +330,7 @@ public class InitConfig {
                     Resource resource1_3_5 = new Resource();
                     resource1_3_5.setIdentifier("sys:resource:delete");
                     resource1_3_5.setName("资源删除");
-                    resource1_3_5.setUrl("/resource/detele");
+                    resource1_3_5.setUrl("/resource/delete/**");
                     resource1_3_5.setValid(EnableDisableStatus.ENABLE);
                     resource1_3_5.setTreeLevel(2);
                     resource1_3_5.setEnd(true);
@@ -370,7 +370,7 @@ public class InitConfig {
                     Resource resource1_4_2 = new Resource();
                     resource1_4_2.setIdentifier("sys:log:view");
                     resource1_4_2.setName("日志查看");
-                    resource1_4_2.setUrl("/log/view");
+                    resource1_4_2.setUrl("/log/view/**");
                     resource1_4_2.setValid(EnableDisableStatus.ENABLE);
                     resource1_4_2.setTreeLevel(2);
                     resource1_4_2.setEnd(true);

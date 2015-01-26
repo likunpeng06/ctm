@@ -35,14 +35,14 @@ public class Resource extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @Size(max = MAX_LENGTH, message = "{resource.identifier.invalid.length}")
+    @Size(max = MAX_LENGTH, message = "标识符长度错误！")
     private String identifier;
 
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "{resource.name.invalid.length}")
+    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "资源名称长度错误！")
     @Column(nullable = false)
     private String name;
 
-    @Size(max = 512, message = "{resource.url.invalid.length}")
+    @Size(max = 512, message = "链接长度错误！")
     private String url;
 
     @Convert(converter = ResourceTypeConverter.class)
@@ -78,7 +78,7 @@ public class Resource extends AbstractEntity {
     @Column(nullable = false)
     private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
 
-    @Size(max = 512, message = "{resource.memo.invalid.length}")
+    @Size(max = 512, message = "备注长度错误！")
     private String memo;
 
     public Long getId() {

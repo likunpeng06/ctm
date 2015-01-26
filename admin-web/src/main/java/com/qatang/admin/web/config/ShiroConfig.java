@@ -8,17 +8,26 @@ import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.SessionListener;
+import org.apache.shiro.session.SessionListenerAdapter;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author qatang
@@ -26,6 +35,8 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 public class ShiroConfig {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private Environment env;
 
@@ -52,6 +63,38 @@ public class ShiroConfig {
         return userRealm;
     }
 
+//    @Bean
+//    public SessionListener sessionListener() {
+//        return new SessionListenerAdapter() {
+//            @Override
+//            public void onStart(Session session) {
+//                logger.error("session created : {}", session.getId());
+//            }
+//
+//            @Override
+//            public void onStop(Session session) {
+//                logger.error("session destroyed : {}", session.getId());
+//            }
+//
+//            @Override
+//            public void onExpiration(Session session) {
+//                logger.error("session expired : {}", session.getId());
+//            }
+//        };
+//    }
+
+    @Bean
+    public SessionManager sessionManager() {
+        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
+        defaultWebSessionManager.setGlobalSessionTimeout(Integer.valueOf(env.getProperty("session.max.age")) * 1000);
+        defaultWebSessionManager.setSessionValidationSchedulerEnabled(false);
+
+//        List<SessionListener> listenerList = new ArrayList<>();
+//        listenerList.add(sessionListener());
+//        defaultWebSessionManager.setSessionListeners(listenerList);
+        return defaultWebSessionManager;
+    }
+
     @Bean
     public SimpleCookie rememberMeCookie() {
         SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
@@ -71,6 +114,7 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(userRealm());
+        securityManager.setSessionManager(sessionManager());
         securityManager.setRememberMeManager(rememberMeManager());
         return securityManager;
     }

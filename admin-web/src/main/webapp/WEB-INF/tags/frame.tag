@@ -43,11 +43,11 @@
 			<div id="navbar-collapse" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> qatang <span class="caret"></span></a>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> ${currentUser.username} <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">个人信息</a></li>
-							<li><a href="#">更改密码</a></li>
-							<li><a href="#">站内消息</a></li>
+							<li><a href="${ctx}/profile/info">个人信息</a></li>
+							<li><a href="${ctx}/profile/password/change">更改密码</a></li>
+							<%--<li><a href="#">站内消息</a></li>--%>
 							<li class="divider"></li>
 							<li><a href="${ctx}/signout" class="navbar-link confirm" data-confirm="确认要退出吗?"><span
 									class="glyphicon glyphicon-log-out"></span> 退出 </a></li>
@@ -66,7 +66,7 @@
 					<div class="panel-heading">${menu.name}</div>
 					<ul class="list-group list-unstyled">
 						<c:forEach items="${menu.children}" var="resource">
-						<li><a href="${ctx}${resource.url}" class="list-group-item ${resource eq currentResource?'active':''}">${resource.name}</a></li>
+						<li><a href="${ctx}${resource.url}" class="list-group-item ${resource eq currentResource || resource eq currentResource.parent?'active':''}">${resource.name}</a></li>
 						</c:forEach>
 					</ul>
 				</div>
@@ -75,9 +75,19 @@
 			</c:if>
 			<div class="col-md-${empty menus?'12':'10'}">
 				<c:if test="${!empty breadcrumb}">
-				<ol class="breadcrumb">
+					<ol class="breadcrumb">
 					<c:forEach items="${breadcrumb}" var="resource">
-					<li><a href="${ctx}${resource.url}">${resource.name}</a></li>
+						<c:if test="${empty resource.url}">
+						<li><a href="javascript://">${resource.name}</a></li>
+						</c:if>
+						<c:if test="${!empty resource.url}">
+							<c:if test="${!resource.end}">
+							<li><a href="${ctx}${resource.url}">${resource.name}</a></li>
+							</c:if>
+							<c:if test="${resource.end}">
+							<li><a href="${ctx}">${resource.name}</a></li>
+							</c:if>
+						</c:if>
 					</c:forEach>
 				</ol>
 				</c:if>

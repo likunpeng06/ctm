@@ -76,6 +76,7 @@ public class ResourceController extends BaseController {
         return "resource/list";
     }
 
+    @RequiresPermissions("sys:resource:create")
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createInput(@ModelAttribute ResourceForm resourceForm, ModelMap modelMap) {
         if (modelMap.containsKey(BINDING_RESULT_KEY)) {
@@ -85,20 +86,22 @@ public class ResourceController extends BaseController {
         return "resource/create";
     }
 
+    @RequiresPermissions("sys:resource:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@Valid ResourceForm resourceForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
         if (resourceForm == null || resourceForm.getResource() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("新建资源错误：resourceForm或者resourceForm.resource对象为空");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         if (StringUtils.isEmpty(resourceForm.getResource().getName())) {
-            result.addError(new ObjectError("resource.name", "{not.null}"));
+            result.addError(new ObjectError("resource.name", "资源名称不能为空！"));
         }
 
         if (resourceForm.getResource().getValid() == null) {
-            result.addError(new ObjectError("resource.valid", "{resource.valid.not.null}"));
+            result.addError(new ObjectError("resource.valid", "是否有效不能为空！"));
         }
 
         if (result.hasErrors()) {
@@ -122,15 +125,17 @@ public class ResourceController extends BaseController {
         }
         resourceService.save(resource);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:resource:update")
     @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
     public String updateInput(@PathVariable String id, @ModelAttribute ResourceForm resourceForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改资源错误：resource.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
@@ -138,17 +143,19 @@ public class ResourceController extends BaseController {
         try {
             resourceId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("修改资源错误：resource.id不能转换成Long类型！resource.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (resourceId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         Resource resource = resourceService.get(resourceId);
         if (resource == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("修改资源错误：未查询到resource.id={}的资源！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
@@ -162,20 +169,22 @@ public class ResourceController extends BaseController {
         return "resource/update";
     }
 
+    @RequiresPermissions("sys:resource:update")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@Valid ResourceForm resourceForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (resourceForm == null || resourceForm.getResource() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.data}");
+            logger.error("修改资源错误：resourceForm或者resourceForm.resource对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         if (resourceForm.getResource().getId() == null) {
-            result.addError(new ObjectError("resource.id", "{resource.id.not.null}"));
+            result.addError(new ObjectError("resource.id", "资源编码不能为空！"));
         }
 
         if (resourceForm.getResource().getValid() == null) {
-            result.addError(new ObjectError("resource.valid", "{resource.valid.not.null}"));
+            result.addError(new ObjectError("resource.valid", "是否有效不能为空！"));
         }
 
         if (result.hasErrors()) {
@@ -198,15 +207,17 @@ public class ResourceController extends BaseController {
         updateResource.setUpdatedTime(new Date());
         resourceService.update(updateResource);
 
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
         return "redirect:/success";
     }
 
+    @RequiresPermissions("sys:resource:view")
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String view(@PathVariable String id, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查看资源错误：resource.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
@@ -214,17 +225,19 @@ public class ResourceController extends BaseController {
         try {
             resourceId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("查看资源错误：resource.id不能转换成Long类型！resource.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (resourceId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         Resource resource = resourceService.get(resourceId);
         if (resource == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("查看资源错误：未查询到resource.id={}的资源！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
@@ -236,10 +249,12 @@ public class ResourceController extends BaseController {
         return "resource/detail";
     }
 
+    @RequiresPermissions("sys:resource:delete")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable String id, RedirectAttributes redirectAttributes) {
         if (StringUtils.isEmpty(id)) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除资源错误：resource.id不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
@@ -247,23 +262,25 @@ public class ResourceController extends BaseController {
         try {
             resourceId = Long.valueOf(id);
         } catch (Exception e) {
+            logger.error("删除资源错误：resource.id不能转换成Long类型！resource.id={}", id);
             logger.error(e.getMessage(), e);
         }
         if (resourceId == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         Resource resource = resourceService.get(resourceId);
         if (resource == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "{illegal.id}");
+            logger.error("删除资源错误：resource.id不能转换成Long类型！resource.id={}", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/resource/list");
             return "redirect:/error";
         }
 
         resourceService.delete(resource.getId());
-        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "{delete.success}");
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
         return "redirect:/resource/list";
     }
 }

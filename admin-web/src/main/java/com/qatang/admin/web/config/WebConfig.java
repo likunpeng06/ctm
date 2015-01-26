@@ -2,7 +2,7 @@ package com.qatang.admin.web.config;
 
 import com.qatang.admin.enums.converter.ResourceTypeConverter;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
-import com.qatang.admin.web.interceptor.MenuInterceptor;
+import com.qatang.admin.web.interceptor.DefaultInterceptor;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.List;
 @ComponentScan(basePackages = "com.qatang.admin.web.controller", useDefaultFilters = false, includeFilters = @ComponentScan.Filter(value = {Controller.class, ControllerAdvice.class}))
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired
-    private MenuInterceptor menuInterceptor;
+    private DefaultInterceptor defaultInterceptor;
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -91,7 +91,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         super.addInterceptors(registry);
 
-        InterceptorRegistration interceptorRegistration = registry.addInterceptor(menuInterceptor);
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(defaultInterceptor);
         interceptorRegistration.addPathPatterns("/**");
         interceptorRegistration.excludePathPatterns("/resources/**");
         interceptorRegistration.excludePathPatterns("/signin");

@@ -46,23 +46,23 @@ public class User extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH, message = "{user.username.invalid.length}")
-    @Pattern(regexp = USERNAME_PATTERN, message = "{user.username.not.valid}")
+    @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH, message = "用户名长度错误！")
+    @Pattern(regexp = USERNAME_PATTERN, message = "用户名格式错误！")
     @Column(updatable = false)
     private String username;
 
-    @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH, message = "{user.password.invalid.length}")
+    @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH, message = "密码长度错误！")
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, length = 64)
     private String salt;
 
-    @Pattern(regexp = EMAIL_PATTERN, message = "{user.email.not.valid}")
+    @Pattern(regexp = EMAIL_PATTERN, message = "邮箱格式错误！")
     @Column(nullable = false, length = 128)
     private String email;
 
-    @Pattern(regexp = MOBILE_PHONE_NUMBER_PATTERN, message = "{user.mobile.phone.number.not.valid}")
+    @Pattern(regexp = MOBILE_PHONE_NUMBER_PATTERN, message = "手机号格式错误！")
     @Column(length = 32)
     private String mobile;
 

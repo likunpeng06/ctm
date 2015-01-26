@@ -32,6 +32,11 @@ public class PasswordHelper {
         user.setPassword(passwordHashValue);
     }
 
+    public boolean validPassword(User user, String password) {
+        String passwordHashValue = AuthenticatorUtils.generateHashValue(algorithmName, password, this.getSalt(user), hashIterations).toString();
+        return user.getPassword().equals(passwordHashValue);
+    }
+
     public String getSalt(User user) {
         return user.getUsername() + user.getSalt();
     }
