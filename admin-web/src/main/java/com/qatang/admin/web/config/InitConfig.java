@@ -155,6 +155,19 @@ public class InitConfig {
                     resource1_1_6.setType(ResourceType.FUNCTION);
                     resource1_1_6 = resourceService.save(resource1_1_6);
                     role1ResourceList.add(resource1_1_6);
+
+                    Resource resource1_1_7 = new Resource();
+                    resource1_1_7.setIdentifier("sys:user:resetPwd");
+                    resource1_1_7.setName("重置密码");
+                    resource1_1_7.setUrl("/user/password/reset/**");
+                    resource1_1_7.setValid(EnableDisableStatus.ENABLE);
+                    resource1_1_7.setTreeLevel(2);
+                    resource1_1_7.setEnd(true);
+                    resource1_1_7.setParent(resource1_1);
+                    resource1_1_7.setPriority(0);
+                    resource1_1_7.setType(ResourceType.FUNCTION);
+                    resource1_1_7 = resourceService.save(resource1_1_7);
+                    role1ResourceList.add(resource1_1_7);
                 }
 
                 Resource resource1_2 = new Resource();

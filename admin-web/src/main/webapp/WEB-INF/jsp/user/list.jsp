@@ -79,7 +79,7 @@
                     <th>是否有效</th>
                     <th>邮箱是否已验证</th>
                     <th>手机是否已验证</th>
-                    <th colspan="3">操作</th>
+                    <th colspan="4">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -97,6 +97,7 @@
                         <td>${user.mobileValid.name}</td>
                         <td><a href="${ctx}/user/update/${user.id}">修改</a></td>
                         <td><a href="${ctx}/user/allot/${user.id}">分配角色</a></td>
+                        <td><a href="${ctx}/user/password/reset/${user.id}">重置密码</a></td>
                         <td><a href="${ctx}/user/delete/${user.id}" onclick="return confirm('确实要删除吗？');">删除</a></td>
                     </tr>
                 </c:forEach>

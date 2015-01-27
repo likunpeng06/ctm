@@ -1,10 +1,10 @@
 package com.qatang.admin.web.controller;
 
 
-import com.qatang.admin.service.user.UserService;
 import com.qatang.admin.web.form.user.UserForm;
+import com.qatang.admin.web.validator.user.SigninValidator;
 import com.qatang.core.controller.BaseController;
-import org.apache.commons.lang3.StringUtils;
+import com.qatang.core.exception.ValidateFailedException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SigninController extends BaseController {
     private static final String kaptchaSessionKey = com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
     @Autowired
-    private UserService userService;
+    private SigninValidator signinValidator;
 
     @RequestMapping(value = "/signin", method = RequestMethod.GET)
     public String signinPage(@ModelAttribute UserForm userForm, ModelMap modelMap) {
@@ -43,20 +43,12 @@ public class SigninController extends BaseController {
 
     @RequestMapping(value = "/signin", method = RequestMethod.POST)
     public String signin(UserForm userForm, @ModelAttribute(kaptchaSessionKey) String captchaExpected, BindingResult result, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-        if (StringUtils.isEmpty(userForm.getUser().getUsername())) {
-            result.addError(new ObjectError("user.username", "用户名不能为空！"));
-        }
-
-        if (StringUtils.isEmpty(userForm.getUser().getPassword())) {
-            result.addError(new ObjectError("user.password", "密码不能为空！"));
-        }
-
-        if (StringUtils.isEmpty(userForm.getCaptcha())) {
-            result.addError(new ObjectError("captcha", "验证码不能为空！"));
-        }
-
-        if (!userForm.getCaptcha().equals(captchaExpected)) {
-            result.addError(new ObjectError("captcha", "验证码不匹配！"));
+        signinValidator.setCaptchaExpected(captchaExpected);
+        try {
+            signinValidator.validate(userForm);
+        } catch (ValidateFailedException e) {
+            logger.error(e.getMessage(), e);
+            result.addError(new ObjectError(e.getField(), e.getMessage()));
         }
 
         if (result.hasErrors()) {

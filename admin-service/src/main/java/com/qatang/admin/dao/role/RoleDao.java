@@ -3,6 +3,9 @@ package com.qatang.admin.dao.role;
 import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.entity.user.User;
 import com.qatang.core.dao.IDao;
+import com.qatang.core.enums.YesNoStatus;
+
+import java.util.List;
 
 /**
  * @author qatang
@@ -10,5 +13,7 @@ import com.qatang.core.dao.IDao;
  */
 public interface RoleDao extends IDao<Role, Long> {
     public Role findByIdentifier(String identifier);
+
+    public List<Role> findByIsDefault(YesNoStatus isDefault);
 
 }

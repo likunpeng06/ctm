@@ -3,11 +3,13 @@ package com.qatang.admin.service.role.impl;
 import com.qatang.admin.dao.role.RoleDao;
 import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.service.role.RoleService;
+import com.qatang.core.enums.YesNoStatus;
 import com.qatang.core.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author qatang
@@ -21,6 +23,11 @@ public class RoleServiceImpl extends AbstractService<Role, Long> implements Role
 
     public Role findByIdentifier(String identifier) {
         return roleDao.findByIdentifier(identifier);
+    }
+
+    @Override
+    public List<Role> findDefaultRoles() {
+        return roleDao.findByIsDefault(YesNoStatus.YES);
     }
 
 }

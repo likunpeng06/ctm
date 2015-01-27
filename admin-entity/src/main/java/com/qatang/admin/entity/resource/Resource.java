@@ -9,7 +9,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -25,9 +24,6 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 public class Resource extends AbstractEntity {
-    public static final int MIN_LENGTH = 2;
-    public static final int MAX_LENGTH = 32;
-
     @Transient
     private static final long serialVersionUID = -5486350981177791424L;
 
@@ -35,14 +31,11 @@ public class Resource extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @Size(max = MAX_LENGTH, message = "标识符长度错误！")
     private String identifier;
 
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "资源名称长度错误！")
     @Column(nullable = false)
     private String name;
 
-    @Size(max = 512, message = "链接长度错误！")
     private String url;
 
     @Convert(converter = ResourceTypeConverter.class)
@@ -78,7 +71,6 @@ public class Resource extends AbstractEntity {
     @Column(nullable = false)
     private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
 
-    @Size(max = 512, message = "备注长度错误！")
     private String memo;
 
     public Long getId() {

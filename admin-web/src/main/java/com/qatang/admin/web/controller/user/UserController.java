@@ -1,16 +1,18 @@
 package com.qatang.admin.web.controller.user;
 
-import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.entity.user.User;
 import com.qatang.admin.query.user.UserSearchable;
 import com.qatang.admin.service.role.RoleService;
 import com.qatang.admin.service.user.UserService;
 import com.qatang.admin.web.form.user.UserForm;
 import com.qatang.admin.web.shiro.authentication.PasswordHelper;
+import com.qatang.admin.web.validator.user.CreateUserValidator;
+import com.qatang.admin.web.validator.user.UpdateUserValidator;
 import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
+import com.qatang.core.exception.ValidateFailedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qatang
@@ -44,6 +48,11 @@ public class UserController extends BaseController {
     @Autowired
     private PasswordHelper passwordHelper;
 
+    @Autowired
+    private CreateUserValidator createUserValidator;
+    @Autowired
+    private UpdateUserValidator updateUserValidator;
+
     @ModelAttribute("orderFieldMap")
     public Map<String, String> getOrderFieldList() {
         Map<String, String> orderFieldMap = new LinkedHashMap<>();
@@ -57,6 +66,11 @@ public class UserController extends BaseController {
     @ModelAttribute("enableDisableStatusList")
     public List<EnableDisableStatus> getEnableDisableStatusList() {
         return EnableDisableStatus.list();
+    }
+
+    @ModelAttribute("yesNoStatusList")
+    public List<YesNoStatus> getYesNoStatusList() {
+        return YesNoStatus.list();
     }
 
     @ModelAttribute("queryEnableDisableStatusList")
@@ -99,41 +113,12 @@ public class UserController extends BaseController {
 
     @RequiresPermissions("sys:user:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(@Valid UserForm userForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
-        if (userForm == null || userForm.getUser() == null) {
-            logger.error("新建用户错误：userForm或者userForm.user对象为空");
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
-            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
-            return "redirect:/error";
-        }
-        if (StringUtils.isEmpty(userForm.getUser().getUsername())) {
-            result.addError(new ObjectError("user.username", "用户名不能为空！"));
-        }
-
-        if (StringUtils.isEmpty(userForm.getUser().getEmail())) {
-            result.addError(new ObjectError("user.email", "邮箱不能为空！"));
-        }
-
-        if (StringUtils.isEmpty(userForm.getUser().getPassword()) || StringUtils.isEmpty(userForm.getConPassword())) {
-            result.addError(new ObjectError("user.password", "密码不能为空！"));
-        }
-
-        if (!userForm.getConPassword().equals(userForm.getUser().getPassword())) {
-            result.addError(new ObjectError("user.password", "密码与确认密码不匹配！"));
-        }
-
-        User conUser = userService.findByUsername(userForm.getUser().getUsername());
-        if (conUser != null) {
-            result.addError(new ObjectError("user.username", "用户名已经被注册！"));
-        }
-
-        conUser = userService.findByEmail(userForm.getUser().getEmail());
-        if (conUser != null) {
-            result.addError(new ObjectError("user.email", "邮箱已经被注册！"));
-        }
-
-        if (userForm.getUser().getValid() == null) {
-            result.addError(new ObjectError("user.valid", "用户有效状态不能为空！"));
+    public String create(UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes) {
+        try {
+            createUserValidator.validate(userForm);
+        } catch (ValidateFailedException e) {
+            logger.error(e.getMessage(), e);
+            result.addError(new ObjectError(e.getField(), e.getMessage()));
         }
 
         if (result.hasErrors()) {
@@ -142,10 +127,9 @@ public class UserController extends BaseController {
             return "redirect:/user/create";
         }
 
-        //多语言支持
-
         User user = userForm.getUser();
         passwordHelper.encryptPassword(user);
+        user.setRoles(roleService.findDefaultRoles());
         userService.save(user);
 
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
@@ -194,20 +178,12 @@ public class UserController extends BaseController {
 
     @RequiresPermissions("sys:user:update")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
-        if (userForm == null || userForm.getUser() == null) {
-            logger.error("修改用户错误：userForm或者userForm.user对象不能为空！");
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
-            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
-            return "redirect:/error";
-        }
-
-        if (userForm.getUser().getId() == null) {
-            result.addError(new ObjectError("user.id", "{user.id.not.null}"));
-        }
-
-        if (userForm.getUser().getValid() == null) {
-            result.addError(new ObjectError("user.valid", "{user.valid.not.null}"));
+    public String update(UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes) {
+        try {
+            updateUserValidator.validate(userForm);
+        } catch (ValidateFailedException e) {
+            logger.error(e.getMessage(), e);
+            result.addError(new ObjectError(e.getField(), e.getMessage()));
         }
 
         if (result.hasErrors()) {
@@ -219,8 +195,11 @@ public class UserController extends BaseController {
         User user = userForm.getUser();
 
         User updateUser = userService.get(user.getId());
+        updateUser.setEmail(user.getEmail());
         updateUser.setMobile(user.getMobile());
         updateUser.setValid(user.getValid());
+        updateUser.setEmailValid(user.getEmailValid());
+        updateUser.setMobileValid(user.getMobileValid());
         updateUser.setUpdatedTime(new Date());
         userService.update(updateUser);
 
@@ -350,7 +329,7 @@ public class UserController extends BaseController {
 
     @RequiresPermissions("sys:user:allot")
     @RequestMapping(value = "/allot", method = RequestMethod.POST)
-    public String allotRoles(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+    public String allotRoles(UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (userForm == null || userForm.getUser() == null) {
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
@@ -376,6 +355,89 @@ public class UserController extends BaseController {
         userService.update(updateUser);
 
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");
+        redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+        return "redirect:/success";
+    }
+
+    @RequiresPermissions("sys:user:resetPwd")
+    @RequestMapping(value = "/password/reset/{id}", method = RequestMethod.GET)
+    public String resetInput(@PathVariable String id, @ModelAttribute UserForm userForm, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (StringUtils.isEmpty(id)) {
+            logger.error("重置密码错误：user.id对象不能为空！");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+        Long userId = null;
+        try {
+            userId = Long.valueOf(id);
+        } catch (Exception e) {
+            logger.error("重置密码错误：user.id不能转换成Long类型！user.id={}", id);
+            logger.error(e.getMessage(), e);
+        }
+        if (userId == null) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+
+        User user = userService.get(userId);
+        if (user == null) {
+            logger.error("重置密码错误：未查询到user.id={}的用户！", id);
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
+            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
+            return "redirect:/error";
+        }
+
+        if (modelMap.containsKey(BINDING_RESULT_KEY)) {
+            modelMap.addAttribute(BindingResult.class.getName().concat(".userForm"), modelMap.get(BINDING_RESULT_KEY));
+        }
+
+        userForm.setUser(user);
+        modelMap.addAttribute(FORWARD_URL_KEY, "/user/list");
+        return "user/reset";
+    }
+
+    @RequiresPermissions("sys:user:resetPwd")
+    @RequestMapping(value = "/password/reset", method = RequestMethod.POST)
+    public String reset(UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        if (StringUtils.isEmpty(userForm.getUser().getPassword())) {
+            String msg = String.format("密码不能为空");
+            result.addError(new ObjectError("user.password", msg));
+        }
+        if (userForm.getUser().getPassword().length() < 6 || userForm.getUser().getPassword().length() > 16) {
+            String msg = String.format("密码长度必须在6-16个字符之间");
+            result.addError(new ObjectError("user.password", msg));
+        }
+
+        if (StringUtils.isEmpty(userForm.getConPassword())) {
+            String msg = String.format("确认密码不能为空");
+            result.addError(new ObjectError("conPassword", msg));
+        }
+        if (userForm.getConPassword().length() < 6 || userForm.getConPassword().length() > 16) {
+            String msg = String.format("确认密码长度必须在6-16个字符之间");
+            result.addError(new ObjectError("conPassword", msg));
+        }
+        if (!userForm.getUser().getPassword().equals(userForm.getConPassword())) {
+            String msg = String.format("两次输入密码不一致");
+            result.addError(new ObjectError("user.password", msg));
+        }
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute(BINDING_RESULT_KEY, result);
+            redirectAttributes.addFlashAttribute(userForm);
+            return "redirect:/user/password/reset/" + userForm.getUser().getId();
+        }
+        User user = userForm.getUser();
+
+        User updateUser = userService.get(user.getId());
+
+        updateUser.setPassword(user.getPassword());
+        passwordHelper.encryptPassword(updateUser);
+        updateUser.setUpdatedTime(new Date());
+        userService.update(updateUser);
+
+        redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "重置密码成功！");
         redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
         return "redirect:/success";
     }

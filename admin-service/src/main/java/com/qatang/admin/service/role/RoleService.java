@@ -4,6 +4,8 @@ import com.qatang.admin.entity.role.Role;
 import com.qatang.admin.entity.user.User;
 import com.qatang.core.service.IService;
 
+import java.util.List;
+
 /**
  * @author qatang
  * @since 2014-12-19 15:01
@@ -11,5 +13,7 @@ import com.qatang.core.service.IService;
 public interface RoleService extends IService<Role, Long> {
 
     public Role findByIdentifier(String identifier);
+
+    public List<Role> findDefaultRoles();
 
 }

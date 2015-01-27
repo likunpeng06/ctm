@@ -7,10 +7,12 @@ import com.qatang.admin.query.role.RoleSearchable;
 import com.qatang.admin.service.resource.ResourceService;
 import com.qatang.admin.service.role.RoleService;
 import com.qatang.admin.web.form.role.RoleForm;
+import com.qatang.admin.web.validator.role.CreateRoleValidator;
 import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.controller.BaseController;
 import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
+import com.qatang.core.exception.ValidateFailedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -41,6 +42,9 @@ public class RoleController extends BaseController {
     private RoleService roleService;
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private CreateRoleValidator createRoleValidator;
 
     @ModelAttribute("orderFieldMap")
     public Map<String, String> getOrderFieldList() {
@@ -97,32 +101,12 @@ public class RoleController extends BaseController {
 
     @RequiresPermissions("sys:role:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(@Valid RoleForm roleForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
-        if (roleForm == null || roleForm.getRole() == null) {
-            logger.error("新建角色错误：roleForm或者roleForm.role对象为空");
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
-            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");
-            return "redirect:/error";
-        }
-        if (StringUtils.isEmpty(roleForm.getRole().getIdentifier())) {
-            result.addError(new ObjectError("role.identifier", "标识符不能为空！"));
-        }
-
-        if (StringUtils.isEmpty(roleForm.getRole().getName())) {
-            result.addError(new ObjectError("role.name", "角色名称不能为空！"));
-        }
-
-        if (roleForm.getRole().getIsDefault() == null) {
-            result.addError(new ObjectError("role.isDefault", "是否为默认角色不能为空！"));
-        }
-
-        if (roleForm.getRole().getValid() == null) {
-            result.addError(new ObjectError("role.valid", "是否有效不能为空！"));
-        }
-
-        Role conRole = roleService.findByIdentifier(roleForm.getRole().getIdentifier());
-        if (conRole != null) {
-            result.addError(new ObjectError("role.identifier", "标识符已被使用！"));
+    public String create(RoleForm roleForm, BindingResult result, ModelMap modelMap, RedirectAttributes redirectAttributes) {
+        try {
+            createRoleValidator.validate(roleForm);
+        } catch (ValidateFailedException e) {
+            logger.error(e.getMessage(), e);
+            result.addError(new ObjectError(e.getField(), e.getMessage()));
         }
 
         if (result.hasErrors()) {
@@ -180,7 +164,7 @@ public class RoleController extends BaseController {
 
     @RequiresPermissions("sys:role:update")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@Valid RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+    public String update(RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (roleForm == null || roleForm.getRole() == null) {
             logger.error("修改角色错误：roleForm或者roleForm.role对象不能为空！");
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
@@ -358,7 +342,7 @@ public class RoleController extends BaseController {
 
     @RequiresPermissions("sys:role:allot")
     @RequestMapping(value = "/allot", method = RequestMethod.POST)
-    public String allotResource(@Valid RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+    public String allotResource(RoleForm roleForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         if (roleForm == null || roleForm.getRole() == null) {
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
             redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/role/list");

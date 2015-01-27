@@ -4,8 +4,9 @@ import com.qatang.admin.entity.user.User;
 import com.qatang.admin.service.user.UserService;
 import com.qatang.admin.web.form.user.UserForm;
 import com.qatang.admin.web.shiro.authentication.PasswordHelper;
+import com.qatang.admin.web.validator.profile.ChangePasswordValidator;
 import com.qatang.core.controller.BaseController;
-import org.apache.commons.lang3.StringUtils;
+import com.qatang.core.exception.ValidateFailedException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class ProfileController extends BaseController {
     @Autowired
     private PasswordHelper passwordHelper;
 
+    @Autowired
+    private ChangePasswordValidator changePasswordValidator;
+
     @RequiresPermissions("user:profile:changePwd")
     @RequestMapping(value = "/password/change", method = RequestMethod.GET)
     public String updateInput(@ModelAttribute UserForm userForm, ModelMap modelMap) {
@@ -57,37 +61,12 @@ public class ProfileController extends BaseController {
 
     @RequiresPermissions("user:profile:changePwd")
     @RequestMapping(value = "/password/change", method = RequestMethod.POST)
-    public String update(@Valid UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
-        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
-        if (currentUser == null) {
-            return "redirect:/signin";
-        }
-        currentUser = userService.get(currentUser.getId());
-        if (currentUser == null) {
-            logger.error("查看个人信息失败：未查询到userId={}的用户", currentUser.getId());
-            return "redirect:/signin";
-        }
-
-        if (userForm == null || userForm.getUser() == null) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE_KEY, "无效数据！");
-            redirectAttributes.addFlashAttribute(FORWARD_URL_KEY, "/user/list");
-            return "redirect:/error";
-        }
-
-        if (StringUtils.isEmpty(userForm.getUser().getPassword()) || StringUtils.isEmpty(userForm.getNewPassword()) || StringUtils.isEmpty(userForm.getConPassword())) {
-            result.addError(new ObjectError("user.password", "密码不能为空！"));
-        }
-
-        if (!userForm.getConPassword().equals(userForm.getNewPassword())) {
-            result.addError(new ObjectError("user.password", "新密码与确认密码不一致！"));
-        }
-
-        if (!passwordHelper.validPassword(currentUser, userForm.getUser().getPassword())) {
-            result.addError(new ObjectError("user.password", "旧密码错误！"));
-        }
-
-        if (passwordHelper.validPassword(currentUser, userForm.getNewPassword())) {
-            result.addError(new ObjectError("user.password", "新密码不能和旧密码一样！"));
+    public String update(UserForm userForm, BindingResult result, RedirectAttributes redirectAttributes, ModelMap modelMap) {
+        try {
+            changePasswordValidator.validate(userForm);
+        } catch (ValidateFailedException e) {
+            logger.error(e.getMessage(), e);
+            result.addError(new ObjectError(e.getField(), e.getMessage()));
         }
 
         if (result.hasErrors()) {
@@ -95,7 +74,7 @@ public class ProfileController extends BaseController {
             redirectAttributes.addFlashAttribute(userForm);
             return "redirect:/profile/password/change";
         }
-
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
         currentUser.setPassword(userForm.getNewPassword());
         passwordHelper.encryptPassword(currentUser);
         currentUser.setUpdatedTime(new Date());

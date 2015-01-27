@@ -20,7 +20,7 @@
                 </tr>
                 <tr>
                     <td>邮箱</td>
-                    <td>${userForm.user.email}&nbsp;&nbsp;<a href="${ctx}/profile/email/change" class="btn btn-primary btn-sm">更换邮箱</a></td>
+                    <td>${userForm.user.email}</td>
                 </tr>
                 <tr>
                     <td>手机号</td>

@@ -10,10 +10,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author qatang
@@ -22,13 +20,12 @@ import java.util.Set;
 @Entity
 @Table(name = "a_role", indexes = {
         @Index(name = "uk_identifier", columnList = "identifier", unique = true),
-        @Index(name = "idx_created_time", columnList = "created_time")
+        @Index(name = "idx_created_time", columnList = "created_time"),
+        @Index(name = "idx_is_default", columnList = "is_default")
 })
 @DynamicInsert
 @DynamicUpdate
 public class Role extends AbstractEntity {
-    public static final int MIN_LENGTH = 1;
-    public static final int MAX_LENGTH = 32;
     @Transient
     private static final long serialVersionUID = 2497603644363104035L;
 
@@ -36,13 +33,12 @@ public class Role extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "标识符长度错误！")
     @Column(nullable = false)
     private String identifier;
-    @Size(min = MIN_LENGTH, max = MAX_LENGTH, message = "角色名称长度错误！")
+
     @Column(nullable = false)
     private String name;
-    @Size(max = 512, message = "描述长度错误！")
+
     private String description;
 
     @Convert(converter = YesNoStatusConverter.class)

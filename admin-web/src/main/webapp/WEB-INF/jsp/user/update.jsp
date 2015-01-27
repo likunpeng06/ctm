@@ -17,7 +17,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">邮箱</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static">${userForm.user.email}</p>
+                            <input type="text" class="form-control" name="user.email" value="${userForm.user.email}">
                         </div>
                     </div>
                     <div class="form-group">
@@ -30,6 +30,18 @@
                         <label class="col-sm-3 control-label">是否有效</label>
                         <div class="col-sm-6 form-inline">
                             <form:select cssClass="form-control" path="user.valid" items="${enableDisableStatusList}" itemValue="value" itemLabel="name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">是否邮箱已验证</label>
+                        <div class="col-sm-6 form-inline">
+                            <form:select cssClass="form-control" path="user.emailValid" items="${yesNoStatusList}" itemValue="value" itemLabel="name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">是否手机已验证</label>
+                        <div class="col-sm-6 form-inline">
+                            <form:select cssClass="form-control" path="user.mobileValid" items="${yesNoStatusList}" itemValue="value" itemLabel="name"/>
                         </div>
                     </div>
                     <div class="form-group">
