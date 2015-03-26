@@ -1,7 +1,6 @@
 package com.qatang.admin.web.controller.log;
 
 import com.qatang.admin.entity.log.Log;
-import com.qatang.admin.entity.user.User;
 import com.qatang.admin.query.log.LogSearchable;
 import com.qatang.admin.service.log.LogService;
 import com.qatang.admin.service.user.UserService;

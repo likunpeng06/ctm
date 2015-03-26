@@ -26,17 +26,19 @@ public class CreateResourceValidator extends AbstractValidator<ResourceForm> {
             throw new ValidateFailedException("resource.name", msg);
         }
 
-        if (StringUtils.isEmpty(resourceForm.getResource().getIdentifier())) {
-            String msg = String.format("标识符不能为空");
-            logger.error(msg);
-            throw new ValidateFailedException("resource.identifier", msg);
-        }
+//        if (StringUtils.isEmpty(resourceForm.getResource().getIdentifier())) {
+//            String msg = String.format("标识符不能为空");
+//            logger.error(msg);
+//            throw new ValidateFailedException("resource.identifier", msg);
+//        }
 
-        Resource conResource = resourceService.findByIdentifier(resourceForm.getResource().getIdentifier());
-        if (conResource != null) {
-            String msg = String.format("标识符已被使用");
-            logger.error(msg);
-            throw new ValidateFailedException("resource.identifier", msg);
+        if (!StringUtils.isEmpty(resourceForm.getResource().getIdentifier())) {
+            Resource conResource = resourceService.findByIdentifier(resourceForm.getResource().getIdentifier());
+            if (conResource != null) {
+                String msg = String.format("标识符已被使用");
+                logger.error(msg);
+                throw new ValidateFailedException("resource.identifier", msg);
+            }
         }
 
         if (resourceForm.getResource().getType() == null) {

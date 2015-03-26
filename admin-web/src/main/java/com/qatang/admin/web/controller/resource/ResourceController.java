@@ -117,6 +117,9 @@ public class ResourceController extends BaseController {
                 resource.setEnd(true);
             }
         }
+        if (resource.getPriority() == null) {
+            resource.setPriority(0);
+        }
         resourceService.save(resource);
 
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");

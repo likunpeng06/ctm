@@ -44,6 +44,9 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter implements Ser
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Log log = new Log();
         User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if (user == null) {
+            return true;
+        }
         user = userService.get(user.getId());
         if (user == null) {
             Subject subject = SecurityUtils.getSubject();
@@ -93,6 +96,9 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter implements Ser
             return;
         }
         User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if (user == null) {
+            return;
+        }
         user = userService.get(user.getId());
         if (user == null) {
             Subject subject = SecurityUtils.getSubject();

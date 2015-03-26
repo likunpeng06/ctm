@@ -127,6 +127,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
 
         StringBuilder sb = new StringBuilder();
+        sb.append("/api/** = anon").append("\n");
         sb.append("/resources/** = anon").append("\n");
         sb.append("/signin = anon").append("\n");
         sb.append("/signup = anon").append("\n");
