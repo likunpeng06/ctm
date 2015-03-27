@@ -6,6 +6,7 @@ import com.qatang.admin.service.game.UploadFileService;
 import com.qatang.admin.web.form.game.UploadFileForm;
 import com.qatang.core.constants.GlobalConstants;
 import com.qatang.core.controller.BaseController;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author qatang
@@ -69,7 +75,7 @@ public class UploadFileController extends BaseController {
 
     @RequiresPermissions("operation:upload:create")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(UploadFileForm uploadFileForm, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String create(UploadFileForm uploadFileForm, MultipartFile file, BindingResult result, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute(BINDING_RESULT_KEY, result);
@@ -77,7 +83,21 @@ public class UploadFileController extends BaseController {
             return "redirect:/upload/create";
         }
 
+        String path = null;
+        if (!file.isEmpty()) {
+            ServletContext sc = request.getSession().getServletContext();
+            path = File.separator + "resources" + File.separator + "upload" + File.separator + System.currentTimeMillis() + ".jpg";
+            File target = new File(sc.getRealPath("/") + path);
+
+            try {
+                FileUtils.writeByteArrayToFile(target, file.getBytes());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
         UploadFile uploadFile = uploadFileForm.getUploadFile();
+        uploadFile.setUrl(path);
         uploadFileService.save(uploadFile);
 
         redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE_KEY, "操作成功！");

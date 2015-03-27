@@ -5,7 +5,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">新建上传文件</div>
             <div class="panel-body">
-            <form:form class="form-horizontal" action="${ctx}/upload/create" method="post" commandName="uploadForm">
+            <form:form class="form-horizontal" action="${ctx}/upload/create" method="post" commandName="uploadForm" enctype="multipart/form-data">
                 <form:errors path="*" cssClass="alert alert-danger" element="div" role="alert"/>
                 <div class="form-group">
                     <label class="col-sm-3 control-label">上传文件名</label>
@@ -16,7 +16,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">url</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="uploadFile.url" value="${uploadForm.uploadFile.url}" required="">
+                        <input type="file" class="form-control" name="file" >
                     </div>
                 </div>
                 <div class="form-group">

@@ -3,7 +3,7 @@
 <frame:frame>
     <div class="container-fluid">
         <div class="panel panel-default">
-            <div class="panel-heading"><a href="${ctx}/uploadFile/create" class="btn btn-primary btn-sm">新建上传文件</a></div>
+            <div class="panel-heading"><a href="${ctx}/upload/create" class="btn btn-primary btn-sm">新建上传文件</a></div>
 
         </div>
     </div>
