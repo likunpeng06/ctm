@@ -172,8 +172,19 @@ CREATE TABLE `a_game` (
   `large_image_url` text,
   `game_url` text,
   `description` text,
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `a_file`;
+CREATE TABLE `a_file` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  `url` text,
+  `description` text,
+  `created_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

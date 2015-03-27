@@ -3,6 +3,7 @@ package com.qatang.admin.web.config;
 import com.qatang.admin.enums.converter.ResourceTypeConverter;
 import com.qatang.admin.web.controller.exception.WebExceptionHandler;
 import com.qatang.admin.web.interceptor.DefaultInterceptor;
+import com.qatang.core.constants.CharsetConstants;
 import com.qatang.core.enums.converter.EnableDisableStatusConverter;
 import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -46,6 +48,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         resolver.setPrefix("/WEB-INF/jsp/");
         resolver.setSuffix(".jsp");
         return resolver;
+    }
+
+    @Bean
+    public CommonsMultipartResolver getMultipartResolver() {
+        CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
+        commonsMultipartResolver.setDefaultEncoding(CharsetConstants.CHARSET_UTF8);
+        commonsMultipartResolver.setMaxUploadSize(1024 * 1024 * 2);
+        return commonsMultipartResolver;
     }
 
     @Override

@@ -205,7 +205,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>${common-collections4.version}</version>
+                <version>${commons-collections4.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -236,12 +236,12 @@
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>${common-fileupload.version}</version>
+                <version>${commons-fileupload.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>${common.compress.version}</version>
+                <version>${commons-compress.version}</version>
             </dependency>
 
             <!-- data source 相关jar包-->
