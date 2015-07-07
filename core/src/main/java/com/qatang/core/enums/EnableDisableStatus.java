@@ -11,14 +11,14 @@ import java.util.*;
  */
 public enum EnableDisableStatus {
     ALL(-1, "全部"),
-    YES(1, "启用"),
-    NO(0, "禁用");
+    ENABLE(1, "启用"),
+    DISABLE(0, "禁用");
 
     private static Logger logger = LoggerFactory.getLogger(EnableDisableStatus.class);
 
-    private static final Map<Integer, EnableDisableStatus> _MAP = new HashMap<Integer, EnableDisableStatus>();
-    private static List<EnableDisableStatus> _LIST = new ArrayList<EnableDisableStatus>();
-    private static List<EnableDisableStatus> _ALL_LIST = new ArrayList<EnableDisableStatus>();
+    private static final Map<Integer, EnableDisableStatus> _MAP = new HashMap<>();
+    private static List<EnableDisableStatus> _LIST = new ArrayList<>();
+    private static List<EnableDisableStatus> _ALL_LIST = new ArrayList<>();
     static {
         for(EnableDisableStatus enableDisableStatus : EnableDisableStatus.values()){
             _MAP.put(enableDisableStatus.getValue(), enableDisableStatus);
@@ -31,7 +31,7 @@ public enum EnableDisableStatus {
         synchronized (_LIST) {
             _LIST = Collections.unmodifiableList(_LIST);
         }
-        synchronized (_LIST) {
+        synchronized (_ALL_LIST) {
             _ALL_LIST = Collections.unmodifiableList(_ALL_LIST);
         }
     }

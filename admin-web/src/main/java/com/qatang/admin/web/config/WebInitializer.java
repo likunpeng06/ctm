@@ -1,11 +1,12 @@
 package com.qatang.admin.web.config;
 
+import com.google.code.kaptcha.servlet.KaptchaServlet;
+import com.qatang.admin.web.controller.exception.WebExceptionHandler;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -21,7 +22,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[]{WebConfig.class, WebExceptionAdviceConfig.class};
+        return new Class<?>[]{WebConfig.class, WebExceptionHandler.class};
     }
 
     @Override
@@ -30,22 +31,20 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
     }
 
     @Override
-    protected Filter[] getServletFilters() {
+    public void onStartup(ServletContext servletContext) throws ServletException {
         CharacterEncodingFilter filter = new CharacterEncodingFilter();
         filter.setEncoding("UTF-8");
         filter.setForceEncoding(true);
+        servletContext.addFilter("characterEncodingFilter", filter).addMappingForUrlPatterns(null, false, "/*");
 
-        return new Filter[]{filter};
-    }
+        servletContext.addFilter("openEntityManagerInViewFilter", new OpenEntityManagerInViewFilter()).addMappingForUrlPatterns(null, false, "/*");
 
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
         DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
         delegatingFilterProxy.setTargetFilterLifecycle(true);
+        servletContext.addFilter("shiroFilter", delegatingFilterProxy).addMappingForUrlPatterns(null, false, "/*");
 
-        FilterRegistration.Dynamic registration = servletContext.addFilter("shiroFilter", delegatingFilterProxy);
-        registration.setAsyncSupported(true);
-        registration.addMappingForUrlPatterns(null, false, "/*");
+        servletContext.addServlet("kaptcha", new KaptchaServlet()).addMapping("/kaptcha");
+
         super.onStartup(servletContext);
     }
 }

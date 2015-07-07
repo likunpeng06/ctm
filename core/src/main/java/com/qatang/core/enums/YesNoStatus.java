@@ -16,9 +16,9 @@ public enum YesNoStatus {
 
     private static Logger logger = LoggerFactory.getLogger(YesNoStatus.class);
 
-    private static final Map<Integer, YesNoStatus> _MAP = new HashMap<Integer, YesNoStatus>();
-    private static List<YesNoStatus> _LIST = new ArrayList<YesNoStatus>();
-    private static List<YesNoStatus> _ALL_LIST = new ArrayList<YesNoStatus>();
+    private static final Map<Integer, YesNoStatus> _MAP = new HashMap<>();
+    private static List<YesNoStatus> _LIST = new ArrayList<>();
+    private static List<YesNoStatus> _ALL_LIST = new ArrayList<>();
     static {
         for(YesNoStatus yesNoStatus : YesNoStatus.values()){
             _MAP.put(yesNoStatus.getValue(), yesNoStatus);
@@ -31,7 +31,7 @@ public enum YesNoStatus {
         synchronized (_LIST) {
             _LIST = Collections.unmodifiableList(_LIST);
         }
-        synchronized (_LIST) {
+        synchronized (_ALL_LIST) {
             _ALL_LIST = Collections.unmodifiableList(_ALL_LIST);
         }
     }

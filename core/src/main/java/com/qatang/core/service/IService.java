@@ -4,6 +4,7 @@ import com.qatang.core.query.Searchable;
 import org.springframework.data.domain.Page;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author qatang
@@ -18,14 +19,15 @@ public interface IService<T, ID extends Serializable> {
 
     public void delete(ID id);
 
+    List<T> findAll();
+
     /**
      * 根据条件查询所有
      * 条件 + 分页 + 排序
      * @param searchable
      * @return
      */
-    public Page<T> findAll(Searchable searchable);
-
+    public Page<T> find(Searchable searchable);
 
     /**
      * 根据条件统计所有记录数

@@ -10,4 +10,6 @@ import com.qatang.core.service.IService;
 public interface UserService extends IService<User, Long> {
 
     public User findByUsername(String username);
+
+    public User findByEmail(String email);
 }

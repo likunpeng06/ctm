@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+.col-no {
+    width: 50px;
+}
+
+/* Reduce the height of the .help-block element */
+.form-group-sm .help-block {
+    margin-bottom: -10px;
+    font-size: 12px;
+}
+
+/* Override bootstrap default font-family */
+body,.tooltip,.popover {
+    font-family: "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
+    font-family: inherit;
+}
+
+/* fixed textarea height with 'form-group-sm' */
+textarea.form-control {
+    height: auto !important;
+}
+
+.list-group-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.navbar-brand>img {
+    height: 40px;
+    margin-top: -10px;
+}

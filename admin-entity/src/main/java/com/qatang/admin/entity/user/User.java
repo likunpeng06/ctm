@@ -1,20 +1,31 @@
 package com.qatang.admin.entity.user;
 
-import com.qatang.core.enums.EnableDisableStatus;
+import com.qatang.admin.entity.role.Role;
 import com.qatang.core.entity.AbstractEntity;
+import com.qatang.core.enums.EnableDisableStatus;
 import com.qatang.core.enums.YesNoStatus;
+import com.qatang.core.enums.converter.EnableDisableStatusConverter;
+import com.qatang.core.enums.converter.YesNoStatusConverter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author qatang
  * @since 2014-12-19 15:01
  */
 @Entity
-@Table(name = "a_user")
+@Table(name = "a_user", indexes = {
+        @Index(name = "uk_username", columnList = "username", unique = true),
+        @Index(name = "uk_email", columnList = "email", unique = true),
+        @Index(name = "idx_created_time", columnList = "created_time"),
+        @Index(name = "idx_valid", columnList = "valid"),
+        @Index(name = "idx_valid_email_mobile", columnList = "email_valid,mobile_valid")
+})
+//@FieldMatch(first = "password", second = "conPassword", message = "{password.fields.must.match}")
 @DynamicInsert
 @DynamicUpdate
 public class User extends AbstractEntity {
@@ -24,30 +35,49 @@ public class User extends AbstractEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(unique = true)
+
+    @Column(updatable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, length = 64)
     private String salt;
+
+    @Column(nullable = false, length = 128)
     private String email;
+
+    @Column(length = 32)
     private String mobile;
+
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_time", updatable = false)
-//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createdTime;
+    @Column(name = "created_time", updatable = false, nullable = false)
+    private Date createdTime = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_time")
     private Date updatedTime;
-    @Enumerated
-    @Convert(converter = EnableDisableStatus.class)
-    private EnableDisableStatus valid;
-    @Enumerated
-    @Convert(converter = YesNoStatus.class)
-    @Column(name = "email_valid")
-    private YesNoStatus emailValid;
-    @Enumerated
-    @Convert(converter = YesNoStatus.class)
-    @Column(name = "mobile_valid")
-    private YesNoStatus mobileValid;
+
+    @Convert(converter = EnableDisableStatusConverter.class)
+    @Column(nullable = false)
+    private EnableDisableStatus valid = EnableDisableStatus.ENABLE;
+
+    @Convert(converter = YesNoStatusConverter.class)
+    @Column(name = "email_valid", nullable = false)
+    private YesNoStatus emailValid = YesNoStatus.NO;
+
+    @Convert(converter = YesNoStatusConverter.class)
+    @Column(name = "mobile_valid", nullable = false)
+    private YesNoStatus mobileValid = YesNoStatus.NO;
+
+    @Convert(converter = YesNoStatusConverter.class)
+    @Column(name = "root", nullable = false)
+    private YesNoStatus root = YesNoStatus.NO;
+
+    @ManyToMany
+    @JoinTable(name = "a_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles;
 
     public Long getId() {
         return id;
@@ -98,9 +128,6 @@ public class User extends AbstractEntity {
     }
 
     public Date getCreatedTime() {
-        if (createdTime == null) {
-            createdTime = new Date();
-        }
         return createdTime;
     }
 
@@ -138,5 +165,25 @@ public class User extends AbstractEntity {
 
     public void setMobileValid(YesNoStatus mobileValid) {
         this.mobileValid = mobileValid;
+    }
+
+    public void setRoot(YesNoStatus root) {
+        this.root = root;
+    }
+
+    public YesNoStatus getRoot() {
+        return root;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public boolean contains(Role role) {
+        return roles != null && roles.contains(role);
     }
 }
